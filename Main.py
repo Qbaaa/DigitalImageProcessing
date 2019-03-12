@@ -1,0 +1,25 @@
+from ReadTiff import ReadTiff
+
+if __name__ == "__main__":
+    ReadTiff("groza.tif")
+
+#print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@2")
+#plik2 = open('czarny.tif', 'rb')
+#bytest = plik2.read(2)
+#bytest = plik2.read(2)
+#image = int.from_bytes(bytest, byteorder="little")
+#print(bytest)
+#print(image)
+
+#image =512
+#test = image.to_bytes(4, byteorder="little")
+#print(test)
+#print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@2")
+
+
+
+#plik.seek(214)
+#qw = 0
+#test = qw.to_bytes(1, byteorder=self.tiffOrder)
+#print(test)
+#plik.write(s=test)
