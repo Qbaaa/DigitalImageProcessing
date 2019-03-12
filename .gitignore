@@ -1,0 +1,6 @@
+*.iml
+*.tif
+*.tiff
+
+.idea
+__pycache__
