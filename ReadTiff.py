@@ -2,6 +2,7 @@ from math import floor
 
 class ReadTiff:
 
+    nameImage = None
     tiffOrder = ""
     compression = 1
     color = -1
@@ -13,15 +14,13 @@ class ReadTiff:
     rowsPerStrip = 4294967295
     imageLength = -1
     imageWidth = -1
-    imageDataStripOffset = []
-    imageDataStripByteCounts = []
-    imageBitsColor = []
     isTag278 = False
     isTag279 = False
 
     def __init__(self, nameFile):
 
         try:
+            self.nameImage = nameFile 
             plik = open(nameFile, 'rb')
             byteOrder = plik.read(2)
             byteTiffIs = plik.read(2)
@@ -98,6 +97,7 @@ class ReadTiff:
 
                         else:
                             if tag ==258:
+                                self.imageBitsColor = []
                                 isValue, sizebyte = self.typeVariable(type, count)
 
                                 if isValue == 0:
@@ -133,6 +133,7 @@ class ReadTiff:
 
                                     else:
                                         if tag == 273:
+                                            self.imageDataStripOffset = []
                                             isValue, sizebyte = self.typeVariable(type, count)
 
                                             self.stripOffset = valueOROffset
@@ -162,6 +163,7 @@ class ReadTiff:
 
                                             else:
                                                 if tag == 279:
+                                                    self.imageDataStripByteCounts = []
                                                     self.isTag279 = True
                                                     isValue, sizebyte = self.typeVariable(type, count)
 
@@ -193,6 +195,7 @@ class ReadTiff:
 
                 if self.isTag279 == False:
                         imageByte = self.imageLength * self.imageWidth * len(self.imageBitsColor)
+                        self.imageDataStripByteCounts = []
                         self.imageDataStripByteCounts.append(imageByte)
 
 
@@ -221,8 +224,6 @@ class ReadTiff:
 
             plik.close()
 
-        except Exception  as e:
-            print("BLAD %s" %e)
         finally:
             plik.close()
 

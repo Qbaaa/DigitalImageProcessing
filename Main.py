@@ -1,7 +1,27 @@
+from ImageUnification import ImageUnification, unificationImageGrayscaleGeometric
+from Image import Image
 from ReadTiff import ReadTiff
 
 if __name__ == "__main__":
-    ReadTiff("groza.tif")
+
+    try:
+        nameFIleONE = 'gimage.tif'
+        nameFileTWO = 'groza.tif'
+
+        readFileOne = ReadTiff(nameFIleONE)
+        imageOne = Image(readFileOne)
+        print(imageOne.nameImageTiff)
+
+        readFileTwo = ReadTiff(nameFileTWO)
+        imageTwo = Image(readFileTwo)
+        print(imageTwo.nameImageTiff)
+
+        unificationImageGrayscaleGeometric(imageOne, imageTwo)
+        print()
+
+    except Exception as e:
+        print("BLAD %s" %e)
+
 
 #print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@2")
 #plik2 = open('czarny.tif', 'rb')
