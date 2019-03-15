@@ -1,12 +1,14 @@
-from ImageUnification import ImageUnification, unificationImageGrayscaleGeometric
+from ImageUnification import ImageUnification, unificationImageGrayscaleGeometric, unificationImageRGBResolution
 from Image import Image
 from ReadTiff import ReadTiff
+from datetime import datetime
+
 
 if __name__ == "__main__":
 
     try:
-        nameFIleONE = 'gimage.tif'
-        nameFileTWO = 'groza.tif'
+        nameFIleONE = 'RGBimage.tif'
+        nameFileTWO = 'RGBLaLiga.tif'
 
         readFileOne = ReadTiff(nameFIleONE)
         imageOne = Image(readFileOne)
@@ -16,8 +18,15 @@ if __name__ == "__main__":
         imageTwo = Image(readFileTwo)
         print(imageTwo.nameImageTiff)
 
-        unificationImageGrayscaleGeometric(imageOne, imageTwo)
-        print()
+        unificationImageRGBResolution(imageOne, imageTwo)
+    #    unificationImageGrayscaleGeometric(imageOne, imageTwo)
+    #    print()
+
+
+
+        s1 = datetime.now().strftime("%Y%m%d_%H%M%S")
+        print(s1)
+        print(type(s1))
 
     except Exception as e:
         print("BLAD %s" %e)
