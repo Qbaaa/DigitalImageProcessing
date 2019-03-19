@@ -1,3 +1,6 @@
+# ZADANIE 1
+
+# PUNKT 1
 def unificationImageGrayscaleGeometric(image1, image2):
 
     if (image1.imageColor == 0 or image1.imageColor == 1) and (image2.imageColor == 0 or image2.imageColor == 1):
@@ -41,7 +44,7 @@ def unificationImageGrayscaleGeometric(image1, image2):
 
                 for i in range(image1.imageLength):
                     for j in range(image1.imageWidth, image2.imageWidth):
-                        image2.imageData[i].append([1])
+                        image1.imageData[i].append([1])
 
                 image1.imageWidth = image2.imageWidth
 
@@ -53,6 +56,7 @@ def unificationImageGrayscaleGeometric(image1, image2):
         raise Exception("Ta funkcja służy do ujednolicenia geometrycznie obrazów SZARYCH, a ktorys obraz jest RGB.")
 
 
+# PUNKT 3
 def unificationImageRGBGeometric(image1, image2):
 
     if image1.imageColor == 2 and image2.imageColor == 2:
@@ -96,7 +100,7 @@ def unificationImageRGBGeometric(image1, image2):
 
                 for i in range(image1.imageLength):
                     for j in range(image1.imageWidth, image2.imageWidth):
-                        image2.imageData[i].append([1, 1, 1])
+                        image1.imageData[i].append([1, 1, 1])
 
                 image1.imageWidth = image2.imageWidth
 
@@ -107,7 +111,7 @@ def unificationImageRGBGeometric(image1, image2):
     else:
         raise Exception("Ta funkcja służy do ujednolicenia geometrycznie obrazów RGB, a ktorys obraz jest SZARY.")
 
-
+# PUNKT 4
 def unificationImageRGBResolution(image1, image2):
 
     if image1.imageColor == 2 and image2.imageColor == 2:
@@ -141,7 +145,7 @@ def unificationImageRGBResolution(image1, image2):
     else:
         raise Exception("Ta funkcja służy do ujednolicenia rozdzielczosciowo obrazów RGB, a ktorys obraz jest SZARY.")
 
-
+# PUNKT 2
 def unificationImageGrayscaleResolution(image1, image2):
 
     if (image1.imageColor == 0 or image1.imageColor == 1) and (image2.imageColor == 0 or image2.imageColor == 1):
@@ -202,7 +206,3 @@ def unificationImageGrayscaleResolution(image1, image2):
 
     else:
         raise Exception("Ta funkcja służy do ujednolicenia rozdzielczosciowo obrazów SZARYCH, a ktorys obraz jest RGB.")
-
-
-class ImageUnification:
-    pass

@@ -9,3 +9,7 @@ class Image:
         self.imageWidth = ReadTiff.imageWidth
         self.imageColor = ReadTiff.color
         self.imageBitsColor = ReadTiff.imageBitsColor
+        self.imageTiffOrder = ReadTiff.tiffOrder
+        self.imageRowsPerStrip = ReadTiff.imageRowsPerStrip
+        self.imageDataStripByteCounts = []
+        self.imageDataStripOffset = []

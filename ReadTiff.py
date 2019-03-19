@@ -1,5 +1,6 @@
 from math import floor
 
+
 class ReadTiff:
 
     nameImage = None
@@ -12,6 +13,7 @@ class ReadTiff:
     stripOffset = -1
     stripByteCounts = -1
     rowsPerStrip = 4294967295
+    imageRowsPerStrip = 4294967295
     imageLength = -1
     imageWidth = -1
     isTag278 = False
@@ -19,6 +21,7 @@ class ReadTiff:
 
     def __init__(self, nameFile):
 
+        global plik
         try:
             self.nameImage = nameFile 
             plik = open(nameFile, 'rb')
@@ -50,13 +53,12 @@ class ReadTiff:
             print(tiffIs)
             print(self.offsetIDF)
 
-            countIDF = -1
+            countIDF = 0
             while self.nextOffsetIDF != 0:
 
                 countIDF=countIDF+1
                 print("----------------IDF %d-------------------" %countIDF)
-                plik.seek(0)
-                plik.read(self.offsetIDF)
+                plik.seek(self.offsetIDF)
 
                 byteNumerDE = plik.read(2)
                 self.countNumerDirectoryEntries = int.from_bytes(byteNumerDE, byteorder=self.tiffOrder)
@@ -78,9 +80,7 @@ class ReadTiff:
                     count = int.from_bytes(byteCount, byteorder=self.tiffOrder)
                     print(count)
                     valueOROffset = int.from_bytes(byteValueORffset, byteorder=self.tiffOrder)
-                    #print(byteValueORffset)
                     print(valueOROffset)
-
 
                     if tag == 256:
                         isValue, sizebyte = self.typeVariable(type, count)
@@ -106,7 +106,6 @@ class ReadTiff:
                                 else:
 
                                     plikTell = plik.tell()
-                                    print(valueOROffset)
                                     plik.seek(valueOROffset)
                                     for x in range(0, count):
                                         byte = plik.read(sizebyte)
@@ -158,7 +157,8 @@ class ReadTiff:
                                                 isValue, sizebyte = self.typeVariable(type, count)
 
                                                 if isValue == 0:
-                                                    self.rowsPerStrip = floor((self.imageLength + valueOROffset - 1)/valueOROffset)
+                                                    self.imageRowsPerStrip = valueOROffset
+                                                    self.rowsPerStrip = floor((self.imageLength + valueOROffset - 1)/ valueOROffset)
                                                     print(self.rowsPerStrip)
 
                                             else:
@@ -188,7 +188,12 @@ class ReadTiff:
 
                 byteNextOffsetIDF = plik.read(4)
                 self.nextOffsetIDF = int.from_bytes(byteNextOffsetIDF, byteorder=self.tiffOrder)
+                print(self.nextOffsetIDF)
                 self.offsetIDF = self.nextOffsetIDF
+
+                if self.nextOffsetIDF != 0:
+                    raise Exception("Blad")
+
 
                 if self.isTag278 == False:
                     self.rowsPerStrip = floor((self.imageLength + self.rowsPerStrip - 1)/self.rowsPerStrip)
@@ -226,7 +231,6 @@ class ReadTiff:
 
         finally:
             plik.close()
-
 
     def typeVariable(self, t, c):
 

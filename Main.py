@@ -1,54 +1,26 @@
-from ImageUnification import ImageUnification, unificationImageGrayscaleGeometric, unificationImageRGBResolution
+from ImageUnification import ImageUnification, unificationImageGrayscaleGeometric, unificationImageRGBResolution, \
+    unificationImageRGBGeometric
 from Image import Image
 from ReadTiff import ReadTiff
-from datetime import datetime
-
+from WriteTiff import writeTiff
 
 if __name__ == "__main__":
 
     try:
-        nameFIleONE = 'RGBimage.tif'
+        nameFIleONE = 'gimage.tif'
         nameFileTWO = 'RGBLaLiga.tif'
 
         readFileOne = ReadTiff(nameFIleONE)
         imageOne = Image(readFileOne)
-        print(imageOne.nameImageTiff)
 
-        readFileTwo = ReadTiff(nameFileTWO)
-        imageTwo = Image(readFileTwo)
-        print(imageTwo.nameImageTiff)
+        writeTiff("kopia6", imageOne)
 
-        unificationImageRGBResolution(imageOne, imageTwo)
-    #    unificationImageGrayscaleGeometric(imageOne, imageTwo)
-    #    print()
+        #readFileTwo = ReadTiff(nameFileTWO)
+        #imageTwo = Image(readFileTwo)
 
-
-
-        s1 = datetime.now().strftime("%Y%m%d_%H%M%S")
-        print(s1)
-        print(type(s1))
+        #unificationImageRGBResolution(imageOne, imageTwo)
+        #unificationImageRGBGeometric(imageOne, imageTwo)
+        #writeTiff('kopia1', imageOne)
 
     except Exception as e:
         print("BLAD %s" %e)
-
-
-#print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@2")
-#plik2 = open('czarny.tif', 'rb')
-#bytest = plik2.read(2)
-#bytest = plik2.read(2)
-#image = int.from_bytes(bytest, byteorder="little")
-#print(bytest)
-#print(image)
-
-#image =512
-#test = image.to_bytes(4, byteorder="little")
-#print(test)
-#print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@2")
-
-
-
-#plik.seek(214)
-#qw = 0
-#test = qw.to_bytes(1, byteorder=self.tiffOrder)
-#print(test)
-#plik.write(s=test)
