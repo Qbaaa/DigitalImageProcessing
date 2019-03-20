@@ -1,5 +1,4 @@
-from ImageUnification import ImageUnification, unificationImageGrayscaleGeometric, unificationImageRGBResolution, \
-    unificationImageRGBGeometric
+from ImageUnification import unification_Grayscale_Geometric, unification_RGB_Geometric, unification_RGB_Resolution, unification_Grayscale_Resolution
 from Image import Image
 from ReadTiff import ReadTiff
 from WriteTiff import writeTiff
@@ -7,20 +6,17 @@ from WriteTiff import writeTiff
 if __name__ == "__main__":
 
     try:
-        nameFIleONE = 'gimage.tif'
-        nameFileTWO = 'RGBLaLiga.tif'
+        nameFIleONE = 'img/gMessi.tif'
+        nameFileTWO = 'img/groza.tif'
 
         readFileOne = ReadTiff(nameFIleONE)
         imageOne = Image(readFileOne)
 
-        writeTiff("kopia6", imageOne)
+        readFileTwo = ReadTiff(nameFileTWO)
+        imageTwo = Image(readFileTwo)
 
-        #readFileTwo = ReadTiff(nameFileTWO)
-        #imageTwo = Image(readFileTwo)
-
-        #unificationImageRGBResolution(imageOne, imageTwo)
-        #unificationImageRGBGeometric(imageOne, imageTwo)
-        #writeTiff('kopia1', imageOne)
+        writeTiff('kopia1', imageOne)
+        writeTiff('kopia2', imageTwo)
 
     except Exception as e:
         print("BLAD %s" %e)

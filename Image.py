@@ -1,8 +1,12 @@
+import numpy as np
+
 
 class Image:
 
     def __init__(self, ReadTiff):
 
+        self.oldImageLength = ReadTiff.imageLength
+        self.oldImageWidth = ReadTiff.imageWidth
         self.nameImageTiff = ReadTiff.nameImage
         self.imageData = ReadTiff.imageData
         self.imageLength = ReadTiff.imageLength
@@ -13,3 +17,18 @@ class Image:
         self.imageRowsPerStrip = ReadTiff.imageRowsPerStrip
         self.imageDataStripByteCounts = []
         self.imageDataStripOffset = []
+
+        if self.imageColor == 2:
+            self.oldImageData = np.ones((self.oldImageLength, self.oldImageWidth, 3), dtype=np.uint8)
+
+            for i in range(self.oldImageLength):
+                for j in range(self.oldImageWidth):
+                    for k in range(3):
+                        self.oldImageData[i, j, k] = self.imageData[i][j][k]
+
+        else:
+            self.oldImageData = np.ones((self.oldImageLength, self.oldImageWidth, 3), dtype=np.uint8)
+
+            for i in range(self.oldImageLength):
+                for j in range(self.oldImageWidth):
+                    self.oldImageData[i, j] = self.imageData[i][j]

@@ -220,12 +220,8 @@ class ReadTiff:
                     if len(self.imageBitsColor) == 2:
                         raise Exception("Program nie obsluguje kanału alfa dla obrazow SZARYCH.")
 
-
                 if self.compression == 1:
                     self.noCompression(plik)
-
-                #for i in range(self.imageLength):
-                    #print(self.imageData[i])
 
             plik.close()
 
@@ -284,8 +280,7 @@ class ReadTiff:
                                                     if t == 12:
                                                         sizebytec = 8
                                                         bytes = 8*c
-
-        if bytes <= 4 and c <= 1 :
+        if bytes <= 4 and c <= 1:
             return 0, sizebytec
         else:
             return 1, sizebytec
@@ -294,7 +289,6 @@ class ReadTiff:
     def noCompression(self, plik):
 
         if self.color == 0 or self.color == 1:
-            print("SZARY")
             self.imageData = []
             for i in range(self.imageLength):
                 self.imageData.append([[-1]])
@@ -310,18 +304,15 @@ class ReadTiff:
                 for y in range(0, self.imageDataStripByteCounts[x]):
                     byte = plik.read(1)
                     data = int.from_bytes(byte, byteorder=self.tiffOrder)
-                    self.imageData[tempX][tempY][0] = data
+                    self.imageData[tempY][tempX][0] = data
+                    tempX += 1
 
-                    tempY = tempY + 1
-
-                    if(tempY == self.imageWidth):
-                        tempX = tempX + 1
-                        tempY = 0
-
+                    if(tempX == self.imageWidth):
+                        tempY += 1
+                        tempX = 0
 
         else:
             if self.color == 2:
-                print("RGB")
                 self.imageData = []
                 for i in range(self.imageLength):
                     self.imageData.append([[-1, -1, -1]])
@@ -338,16 +329,16 @@ class ReadTiff:
                     for y in range(0, self.imageDataStripByteCounts[x]):
                         byte = plik.read(1)
                         data = int.from_bytes(byte, byteorder=self.tiffOrder)
-                        self.imageData[tempX][tempY][tempRGB] = data
+                        self.imageData[tempY][tempX][tempRGB] = data
 
-                        tempRGB = tempRGB + 1
+                        tempRGB += 1
 
                         if tempRGB == 3:
                             tempRGB = 0
-                            tempY = tempY + 1
+                            tempX += 1
 
-                            if(tempY == self.imageWidth):
-                                tempX = tempX + 1
-                                tempY = 0
+                            if(tempX == self.imageWidth):
+                                tempY += 1
+                                tempX = 0
             else:
                 raise Exception("programu 1")

@@ -1,6 +1,5 @@
 from datetime import datetime
 from math import floor
-from ReadTiff import ReadTiff
 
 
 def writeTiff(name, image):
@@ -30,7 +29,7 @@ def writeTiff(name, image):
             temp_byte_counts = temp_byte_counts - (image.imageWidth * len(image.imageBitsColor) * temp_RowsPerStrip)
 
     dateTime = datetime.now().strftime("%Y%m%d_%H%M%S_")
-    nameWrite = dateTime + name + ".tif"
+    nameWrite = "results/" + dateTime + name + ".tif"
 
     plikRead = open(image.nameImageTiff, 'rb')
     plikWrite = open(nameWrite, 'wb')
@@ -198,12 +197,14 @@ def writeTiff(name, image):
 
             else:
                 if tag == 273:
+                    type_273 = temp_type
 
                     temp = image.imageRowsPerStrip
                     byte = temp.to_bytes(4, byteorder=image.imageTiffOrder)
                     plikWrite.write(byte)
 
                     temp = newOffset
+                    tag_273 = newOffset
                     byte = temp.to_bytes(4, byteorder=image.imageTiffOrder)
                     plikWrite.write(byte)
                     plikWriteTell = plikWrite.tell()
