@@ -194,7 +194,6 @@ class ReadTiff:
                 if self.nextOffsetIDF != 0:
                     raise Exception("Blad")
 
-
                 if self.isTag278 == False:
                     self.rowsPerStrip = floor((self.imageLength + self.rowsPerStrip - 1)/self.rowsPerStrip)
 
@@ -222,6 +221,11 @@ class ReadTiff:
 
                 if self.compression == 1:
                     self.noCompression(plik)
+
+            for i in range(self.imageLength):
+                for j in range(self.imageWidth):
+                    print(self.imageData[i][j][0], end=" ")
+                print()
 
             plik.close()
 
@@ -298,18 +302,45 @@ class ReadTiff:
             tempX = 0
             tempY = 0
 
-            for x in range(0, self.rowsPerStrip):
-                plik.seek(self.imageDataStripOffset[x])
+            if self.imageBitsColor[0] == 8:
 
-                for y in range(0, self.imageDataStripByteCounts[x]):
-                    byte = plik.read(1)
-                    data = int.from_bytes(byte, byteorder=self.tiffOrder)
-                    self.imageData[tempY][tempX][0] = data
-                    tempX += 1
+                for x in range(0, self.rowsPerStrip):
+                    plik.seek(self.imageDataStripOffset[x])
 
-                    if(tempX == self.imageWidth):
-                        tempY += 1
-                        tempX = 0
+                    for y in range(0, self.imageDataStripByteCounts[x]):
+                        byte = plik.read(1)
+                        data = int.from_bytes(byte, byteorder=self.tiffOrder)
+                        self.imageData[tempY][tempX][0] = data
+                        tempX += 1
+
+                        if(tempX == self.imageWidth):
+                            tempY += 1
+                            tempX = 0
+
+            else:
+                if self.imageBitsColor[0] == 1:
+
+                    for x in range(0, self.rowsPerStrip):
+                        plik.seek(self.imageDataStripOffset[x])
+
+                        for y in range(0, self.imageDataStripByteCounts[x]):
+                            byte = plik.read(1)
+                            data = int.from_bytes(byte, byteorder=self.tiffOrder)
+                            bits = bin(data)
+                            bits = bits[2:len(bits)]
+                            bits = bits.zfill(8)
+
+                            for z in range(len(bits)):
+                                self.imageData[tempY][tempX][0] = int(bits[z])
+                                tempX += 1
+
+                                if(tempX == self.imageWidth):
+                                    tempY += 1
+                                    tempX = 0
+                                    break
+
+                else:
+                    raise Exception("programu nie opsługuje wczytywania obrazów bitowych.")
 
         else:
             if self.color == 2:
