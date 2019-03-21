@@ -1,5 +1,5 @@
 from datetime import datetime
-from math import floor
+from math import floor, ceil
 
 
 def writeTiff(name, image):
@@ -9,13 +9,38 @@ def writeTiff(name, image):
     image.imageRowsPerStrip = floor((image.imageLength + image.imageRowsPerStrip - 1)/image.imageRowsPerStrip)
 
     if image.imageRowsPerStrip == 1:
+
         if image.imageColor == 0 or image.imageColor == 1:
-            image.imageDataStripByteCounts.append(image.imageLength * image.imageWidth)
+            if image.imageBitsColor[0] == 8:
+                image.imageDataStripByteCounts.append(image.imageLength * image.imageWidth)
+
+            else:
+                if image.imageBitsColor[0] == 1:
+                    temp_strip_byte_count = ceil(image.imageWidth/8)
+                    temp_strip_byte_count = temp_strip_byte_count * image.imageLength
+                    image.imageDataStripByteCounts.append(temp_strip_byte_count)
+
+                else:
+                    raise Exception("Program nie zapisuje obrazow, ktore maja taki bit.")
+
         else:
             image.imageDataStripByteCounts.append(image.imageLength * image.imageWidth * 3)
+
     else:
         if image.imageColor == 0 or image.imageColor == 1:
-            temp_byte_counts = image.imageLength * image.imageWidth
+            if image.imageBitsColor[0] == 8:
+                temp_byte_counts = image.imageLength * image.imageWidth
+
+            else:
+                if image.imageBitsColor[0] == 1:
+                    temp_strip_byte_count = ceil(image.imageWidth/8)
+                    temp_strip_byte_count = temp_strip_byte_count * image.imageLength
+
+                    temp_byte_counts = temp_strip_byte_count
+
+                else:
+                    raise Exception("Program nie zapisuje obrazow, ktore maja taki bit.")
+
         else:
             temp_byte_counts = image.imageLength * image.imageWidth * 3
 
@@ -24,10 +49,12 @@ def writeTiff(name, image):
             if image.imageRowsPerStrip - 1 == i:
                 image.imageDataStripByteCounts.append(temp_byte_counts)
             else:
-                image.imageDataStripByteCounts.append(image.imageWidth * len(image.imageBitsColor) * temp_RowsPerStrip)
+                image.imageDataStripByteCounts.append(ceil((image.imageWidth * image.imageBitsColor[0])/8) * len(image.imageBitsColor) * temp_RowsPerStrip)
 
-            temp_byte_counts = temp_byte_counts - (image.imageWidth * len(image.imageBitsColor) * temp_RowsPerStrip)
+            temp_byte_counts = temp_byte_counts - (ceil((image.imageWidth * image.imageBitsColor[0])/8) * len(image.imageBitsColor) * temp_RowsPerStrip)
 
+
+    print(image.imageDataStripByteCounts)
     dateTime = datetime.now().strftime("%Y%m%d_%H%M%S_")
     nameWrite = "results/" + dateTime + name + ".tif"
 
@@ -141,8 +168,11 @@ def writeTiff(name, image):
 
                                         if image.imageRowsPerStrip == 1:
                                             if image.imageColor == 0 or image.imageColor == 1:
-                                                temp = image.imageLength * image.imageWidth
+                                                #temp = image.imageLength * image.imageWidth
+                                                #byte = temp.to_bytes(4, byteorder=image.imageTiffOrder)
+                                                temp = image.imageDataStripByteCounts[0]
                                                 byte = temp.to_bytes(4, byteorder=image.imageTiffOrder)
+
                                                 plikWrite.write(byteCount)
                                                 plikWrite.write(byte)
                                             else:
@@ -273,7 +303,6 @@ def writeTiff(name, image):
     else:
 
         plikWrite.seek(tag_273)
-
         temp = newOffset
         for i in range(image.imageRowsPerStrip):
             image.imageDataStripOffset.append(temp)
@@ -286,18 +315,44 @@ def writeTiff(name, image):
         tempX = 0
         tempY = 0
 
-        for i in range(len(image.imageDataStripOffset)):
-            plikWrite.seek(image.imageDataStripOffset[i])
+        if image.imageBitsColor[0] == 8:
 
-            for j in range(image.imageDataStripByteCounts[i]):
-                temp = image.imageData[tempY][tempX][0]
-                byte = temp.to_bytes(1, byteorder=image.imageTiffOrder)
-                plikWrite.write(byte)
-                tempX = tempX + 1
+            for i in range(len(image.imageDataStripOffset)):
+                plikWrite.seek(image.imageDataStripOffset[i])
 
-                if tempX == image.imageWidth:
-                    tempX = 0
-                    tempY = tempY + 1
+                for j in range(image.imageDataStripByteCounts[i]):
+                    temp = image.imageData[tempY][tempX][0]
+                    byte = temp.to_bytes(1, byteorder=image.imageTiffOrder)
+                    plikWrite.write(byte)
+                    tempX = tempX + 1
+
+                    if tempX == image.imageWidth:
+                        tempX = 0
+                        tempY = tempY + 1
+        else:
+            if image.imageBitsColor[0] == 1:
+
+                for i in range(len(image.imageDataStripOffset)):
+                    plikWrite.seek(image.imageDataStripOffset[i])
+
+                    for j in range(image.imageDataStripByteCounts[i]):
+                        bits = ""
+
+                        for k in range(8):
+                            temp = str(image.imageData[tempY][tempX][0])
+                            bits += temp
+                            tempX += 1
+                            if tempX == image.imageWidth:
+                                tempX = 0
+                                tempY += 1
+                                break
+
+                        tempb = int(bits, 2)
+                        byte = tempb.to_bytes(1, byteorder=image.imageTiffOrder)
+                        plikWrite.write(byte)
+
+            else:
+                raise Exception("Program nie zapisuje obrazow, ktore maja taki bit.")
 
 
     else:
@@ -322,7 +377,6 @@ def writeTiff(name, image):
                 if tempX == image.imageWidth:
                     tempX = 0
                     tempY = tempY + 1
-
 
     plikWrite.close()
     plikRead.close()
@@ -380,8 +434,12 @@ def typeVariable(t, c):
                                                 if t == 12:
                                                     sizebytec = 8
                                                     bytes = 8*c
+                                                else:
+                                                    if t == 13:
+                                                        sizebytec = 4
+                                                        bytes = 4*c
 
-    if bytes <= 4 and c <= 1 :
+    if bytes <= 4 and c <= 1:
         return 0, sizebytec
     else:
         return 1, sizebytec
