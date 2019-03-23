@@ -14,6 +14,7 @@ class ReadTiff:
     stripByteCounts = -1
     rowsPerStrip = 4294967295
     imageRowsPerStrip = 4294967295
+    constRowsPerStrip = 4294967295
     imageLength = -1
     imageWidth = -1
     isTag278 = False
@@ -157,6 +158,7 @@ class ReadTiff:
                                                 isValue, sizebyte = self.typeVariable(type, count)
 
                                                 if isValue == 0:
+                                                    self.constRowsPerStrip = valueOROffset
                                                     self.imageRowsPerStrip = valueOROffset
                                                     self.rowsPerStrip = floor((self.imageLength + valueOROffset - 1)/ valueOROffset)
                                                     print(self.rowsPerStrip)
@@ -183,7 +185,6 @@ class ReadTiff:
 
                                                     print(self.imageDataStripByteCounts)
 
-
                     print("------------------------------------------------")
 
                 byteNextOffsetIDF = plik.read(4)
@@ -202,7 +203,6 @@ class ReadTiff:
                         self.imageDataStripByteCounts = []
                         self.imageDataStripByteCounts.append(imageByte)
 
-
                 print("---------------IMAGE--------------")
 
                 if self.color != 0 and self.color != 1 and self.color != 2:
@@ -210,7 +210,6 @@ class ReadTiff:
 
                 if self.compression != 1:
                     raise Exception("Program nie obsluguje tej kompresji %d." %self.compression)
-
 
                 if self.color == 2:
                     if len(self.imageBitsColor) == 4:
@@ -221,11 +220,6 @@ class ReadTiff:
 
                 if self.compression == 1:
                     self.noCompression(plik)
-
-            for i in range(self.imageLength):
-                for j in range(self.imageWidth):
-                    print(self.imageData[i][j][0], end=" ")
-                print()
 
             plik.close()
 
@@ -289,7 +283,7 @@ class ReadTiff:
         else:
             return 1, sizebytec
 
-
+    # czytanie z pliku tiff danych obrazu
     def noCompression(self, plik):
 
         if self.color == 0 or self.color == 1:
@@ -340,7 +334,44 @@ class ReadTiff:
                                     break
 
                 else:
-                    raise Exception("programu nie opsługuje wczytywania obrazów bitowych.")
+                    if self.imageBitsColor[0] == 4:
+
+                        for x in range(0, self.rowsPerStrip):
+                            plik.seek(self.imageDataStripOffset[x])
+
+                            for y in range(0, self.imageDataStripByteCounts[x]):
+                                byte = plik.read(1)
+                                data = int.from_bytes(byte, byteorder=self.tiffOrder)
+                                bits = bin(data)
+                                bits = bits[2:len(bits)]
+                                bits = bits.zfill(8)
+
+                                for z in range(2):
+                                    bits4 = ""
+
+                                    if z == 0:
+                                        bits4 = bits[0:4]
+                                        tempb = int(bits4, 2)
+                                        self.imageData[tempY][tempX][0] = int(tempb)
+                                        tempX += 1
+                                        if tempX == self.imageWidth:
+                                            tempY += 1
+                                            tempX = 0
+                                            break
+
+                                    else:
+                                        if z == 1:
+                                            bits4 = bits[4:8]
+                                            tempb = int(bits4, 2)
+                                            self.imageData[tempY][tempX][0] = int(tempb)
+                                            tempX += 1
+                                            if tempX == self.imageWidth:
+                                                tempX += 1
+                                                tempY = 0
+                                                break
+
+                    else:
+                        raise Exception("program obsługuje tylko wczytywanie obrazów SZARYCH 1,4,8 bitowych.")
 
         else:
             if self.color == 2:
@@ -354,22 +385,32 @@ class ReadTiff:
                 tempY = 0
                 tempRGB = 0
 
-                for x in range(0, self.rowsPerStrip):
-                    plik.seek(self.imageDataStripOffset[x])
+                if self.imageBitsColor[0] == 8:
 
-                    for y in range(0, self.imageDataStripByteCounts[x]):
-                        byte = plik.read(1)
-                        data = int.from_bytes(byte, byteorder=self.tiffOrder)
-                        self.imageData[tempY][tempX][tempRGB] = data
+                    for x in range(0, self.rowsPerStrip):
+                        plik.seek(self.imageDataStripOffset[x])
 
-                        tempRGB += 1
+                        for y in range(0, self.imageDataStripByteCounts[x]):
+                            byte = plik.read(1)
+                            data = int.from_bytes(byte, byteorder=self.tiffOrder)
+                            self.imageData[tempY][tempX][tempRGB] = data
 
-                        if tempRGB == 3:
-                            tempRGB = 0
-                            tempX += 1
+                            tempRGB += 1
+                            if tempRGB == 3:
 
-                            if(tempX == self.imageWidth):
-                                tempY += 1
-                                tempX = 0
+                                tempRGB = 0
+                                tempX += 1
+                                if(tempX == self.imageWidth):
+
+                                    tempY += 1
+                                    tempX = 0
+
+                else:
+                    if self.imageBitsColor[0] == 4:
+                        raise Exception("brak implementacji dla wczytywanie obrazów RGB 12 bitowych.")
+
+                    else:
+                        raise Exception("program obsługuje tylko wczytywanie obrazów RGB 12, 24 bitowych.")
+
             else:
                 raise Exception("programu 1")

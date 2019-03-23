@@ -5,12 +5,13 @@ from math import floor, ceil
 def writeTiff(name, image):
 
     global tag_273, type_273
-    temp_RowsPerStrip = image.imageRowsPerStrip
-    image.imageRowsPerStrip = floor((image.imageLength + image.imageRowsPerStrip - 1)/image.imageRowsPerStrip)
+    temp_RowsPerStrip = image.constRowsPerStrip
+    image.imageRowsPerStrip = floor((image.imageLength + image.constRowsPerStrip - 1)/image.constRowsPerStrip)
 
+    image.imageDataStripByteCounts = []
     if image.imageRowsPerStrip == 1:
-
         if image.imageColor == 0 or image.imageColor == 1:
+
             if image.imageBitsColor[0] == 8:
                 image.imageDataStripByteCounts.append(image.imageLength * image.imageWidth)
 
@@ -21,7 +22,13 @@ def writeTiff(name, image):
                     image.imageDataStripByteCounts.append(temp_strip_byte_count)
 
                 else:
-                    raise Exception("Program nie zapisuje obrazow, ktore maja taki bit.")
+                    if image.imageBitsColor[0] == 4:
+                        temp_strip_byte_count = ceil(image.imageWidth * 4/8)
+                        temp_strip_byte_count = temp_strip_byte_count * image.imageLength
+                        image.imageDataStripByteCounts.append(temp_strip_byte_count)
+
+                    else:
+                        raise Exception("program obsługuje tylko zapisywanie obrazów SZARYCH 1,4,8 bitowych.")
 
         else:
             image.imageDataStripByteCounts.append(image.imageLength * image.imageWidth * 3)
@@ -39,7 +46,14 @@ def writeTiff(name, image):
                     temp_byte_counts = temp_strip_byte_count
 
                 else:
-                    raise Exception("Program nie zapisuje obrazow, ktore maja taki bit.")
+                    if image.imageBitsColor[0] == 4:
+                        temp_strip_byte_count = ceil(image.imageWidth * 4/8)
+                        temp_strip_byte_count = temp_strip_byte_count * image.imageLength
+
+                        temp_byte_counts = temp_strip_byte_count
+
+                    else:
+                        raise Exception("program obsługuje tylko zapisywanie obrazów SZARYCH 1,4,8 bitowych.")
 
         else:
             temp_byte_counts = image.imageLength * image.imageWidth * 3
@@ -53,8 +67,6 @@ def writeTiff(name, image):
 
             temp_byte_counts = temp_byte_counts - (ceil((image.imageWidth * image.imageBitsColor[0])/8) * len(image.imageBitsColor) * temp_RowsPerStrip)
 
-
-    print(image.imageDataStripByteCounts)
     dateTime = datetime.now().strftime("%Y%m%d_%H%M%S_")
     nameWrite = "results/" + dateTime + name + ".tif"
 
@@ -145,7 +157,6 @@ def writeTiff(name, image):
                                     byte = temp.to_bytes(4, byteorder=image.imageTiffOrder)
                                     plikWrite.write(byte)
 
-
                                     plikWriteTell = plikWrite.tell()
                                     plikWrite.seek(newOffset)
                                     for i in range(image.imageRowsPerStrip):
@@ -187,7 +198,6 @@ def writeTiff(name, image):
                                             temp = newOffset
                                             byte = temp.to_bytes(4, byteorder=image.imageTiffOrder)
                                             plikWrite.write(byte)
-
 
                                             plikWriteTell = plikWrite.tell()
                                             plikWrite.seek(newOffset)
@@ -258,7 +268,6 @@ def writeTiff(name, image):
                         byte = temp.to_bytes(4, byteorder=image.imageTiffOrder)
                         plikWrite.write(byte)
 
-
                         plikWriteTell = plikWrite.tell()
                         plikWrite.seek(newOffset)
                         for i in range(image.imageRowsPerStrip):
@@ -269,8 +278,8 @@ def writeTiff(name, image):
                         newOffset = plikWrite.tell()
                         plikWrite.seek(plikWriteTell)
 
-
                     else:
+
                         plikWrite.write(byteCount)
                         temp = newOffset
                         byte = temp.to_bytes(4, byteorder=image.imageTiffOrder)
@@ -280,7 +289,9 @@ def writeTiff(name, image):
 
                         plikWrite.seek(newOffset)
                         plikRead.seek(valueOROffset)
+
                         for i in range(count):
+
                             byte = plikRead.read(temp_type)
                             plikWrite.write(byte)
 
@@ -288,9 +299,10 @@ def writeTiff(name, image):
                         plikWrite.seek(plikWriteTell)
                         plikRead.seek(plikReadTell)
 
-
     byteNextOffsetIDF = plikRead.read(4)
     plikWrite.write(byteNextOffsetIDF)
+
+    image.imageDataStripOffset = []
 
     if image.imageRowsPerStrip == 1:
 
@@ -310,6 +322,7 @@ def writeTiff(name, image):
             plikWrite.write(byte)
             temp = temp + image.imageDataStripByteCounts[i]
 
+    # Zapisanie do pliku danych z obrazu
     if image.imageColor == 0 or image.imageColor == 1:
 
         tempX = 0
@@ -352,8 +365,49 @@ def writeTiff(name, image):
                         plikWrite.write(byte)
 
             else:
-                raise Exception("Program nie zapisuje obrazow, ktore maja taki bit.")
+                if image.imageBitsColor[0] == 4:
 
+                    for i in range(len(image.imageDataStripOffset)):
+                        plikWrite.seek(image.imageDataStripOffset[i])
+                        for j in range(image.imageDataStripByteCounts[i]):
+                            bits = ""
+
+                            for z in range(2):
+
+                                if z == 0:
+                                    temp = image.imageData[tempY][tempX][0]
+                                    bits4 = bin(temp)
+                                    bits4 = bits4[2:len(bits4)]
+                                    bits4 = bits4.zfill(4)
+                                    bits += bits4
+                                    tempX += 1
+                                    if tempX == image.imageWidth:
+                                        tempY += 1
+                                        tempX = 0
+                                        break
+
+                                else:
+                                    if z == 1:
+                                        temp = image.imageData[tempY][tempX][0]
+                                        bits4 = bin(temp)
+                                        bits4 = bits4[2:len(bits4)]
+                                        bits4 = bits4.zfill(4)
+                                        bits += bits4
+                                        tempX += 1
+                                        if tempX == image.imageWidth:
+                                            tempY += 1
+                                            tempX = 0
+                                            break
+
+                            if len(bits) == 4:
+                                bits += "0000"
+
+                            tempb = int(bits, 2)
+                            byte = tempb.to_bytes(1, byteorder=image.imageTiffOrder)
+                            plikWrite.write(byte)
+
+                else:
+                    raise Exception("program obsługuje tylko zapisywanie obrazów SZARYCH 1,4,8 bitowych.")
 
     else:
         tempX = 0

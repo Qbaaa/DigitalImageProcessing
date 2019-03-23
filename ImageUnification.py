@@ -309,17 +309,27 @@ def unification_Grayscale_Resolution(image1, image2):
         if image1.imageBitsColor[0] != image2.imageBitsColor[0]:
 
             if image1.imageBitsColor[0] == 4:
+                print("Zmiana rozdzielczosci obrazu 1 z 4 na 8 bitow.")
                 for i in range(image1.imageLength):
                     for j in range(image1.imageWidth):
                         image1.imageData[i][j][0] = image1.imageData[i][j][0] * 16
                 image1.imageBitsColor[0] = 8
 
+                for i in range(image1.oldImageLength):
+                    for j in range(image1.oldImageWidth):
+                        image1.oldImageData[i][j][0] = image1.oldImageData[i][j][0] * 16
+
             else:
+                print("Zmiana rozdzielczosci obrazu 2 z 4 na 8 bitow.")
                 if image2.imageBitsColor[0] == 4:
                     for i in range(image2.imageLength):
                         for j in range(image2.imageWidth):
                             image2.imageData[i][j][0] = image2.imageData[i][j][0] * 16
                     image2.imageBitsColor[0] = 8
+
+                    for i in range(image2.oldImageLength):
+                        for j in range(image2.oldImageWidth):
+                            image2.oldImageData[i][j][0] = image2.oldImageData[i][j][0] * 16
 
                 else:
                     raise Exception("programu 3")
@@ -334,11 +344,21 @@ def unification_Grayscale_Resolution(image1, image2):
                     for i in range(image1.imageLength):
                         for j in range(image1.imageWidth):
                             image1.imageData[i][j][0] = 255 - image1.imageData[i][j][0]
+
+                for i in range(image1.oldImageLength):
+                    for j in range(image1.oldImageWidth):
+                        image1.oldImageData[i][j][0] = 255 - image1.oldImageData[i][j][0]
+
                 else:
                     if image1.imageBitsColor[0] == 4:
                         for i in range(image1.imageLength):
                             for j in range(image1.imageWidth):
                                 image1.imageData[i][j][0] = 15 - image1.imageData[i][j][0]
+
+                        for i in range(image1.oldImageLength):
+                            for j in range(image1.oldImageWidth):
+                                image1.oldImageData[i][j][0] = 15 - image1.oldImageData[i][j][0]
+
                     else:
                         raise Exception("programu 4")
                 image1.imageColor = 1
@@ -349,16 +369,28 @@ def unification_Grayscale_Resolution(image1, image2):
                         for i in range(image2.imageLength):
                             for j in range(image2.imageWidth):
                                 image2.imageData[i][j][0] = 255 - image2.imageData[i][j][0]
+
+                        for i in range(image2.oldImageLength):
+                            for j in range(image2.oldImageWidth):
+                                image2.oldImageData[i][j][0] = 255 - image2.oldImageData[i][j][0]
+
                     else:
                         if image2.imageBitsColor[0] == 4:
                             for i in range(image2.imageLength):
                                 for j in range(image2.imageWidth):
                                     image2.imageData[i][j][0] = 15 - image2.imageData[i][j][0]
+
+                            for i in range(image2.oldImageLength):
+                                for j in range(image2.oldImageWidth):
+                                    image2.oldImageData[i][j][0] = 15 -  image2.oldImageData[i][j][0]
+
                         else:
                             raise Exception("programu 5")
                     image2.imageColor = 1
                 else:
                     raise Exception("programu 6")
+        else:
+            print("Kolor obrazy maja taki sam.")
 
         tempImage1 = np.zeros((image1.imageLength, image1.imageWidth), dtype=np.uint8)
         tempImage2 = np.zeros((image2.imageLength, image2.imageWidth), dtype=np.uint8)

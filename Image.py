@@ -17,6 +17,7 @@ class Image:
         self.imageRowsPerStrip = ReadTiff.imageRowsPerStrip
         self.imageDataStripByteCounts = []
         self.imageDataStripOffset = []
+        self.constRowsPerStrip = ReadTiff.constRowsPerStrip
 
         if self.imageColor == 2:
             self.oldImageData = np.ones((self.oldImageLength, self.oldImageWidth, 3), dtype=np.uint8)
