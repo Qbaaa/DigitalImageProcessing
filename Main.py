@@ -11,7 +11,7 @@ from WriteTiff import writeTiff
 if __name__ == "__main__":
 
     try:
-        nameFIleONE = 'img/tiger04.tif'
+        nameFIleONE = 'img/2012.tif'
         nameFileTWO = 'img/gMessi100.tif'
 
 
@@ -29,19 +29,19 @@ if __name__ == "__main__":
         readFileOne = ReadTiff(nameFIleONE)
         imageOne = Image(readFileOne)
 
-        readFileTwo = ReadTiff(nameFileTWO)
-        imageTwo = Image(readFileTwo)
+        #readFileTwo = ReadTiff(nameFileTWO)
+        #imageTwo = Image(readFileTwo)
 
-        unification_Grayscale_Geometric(imageOne, imageTwo)
-        writeTiff('unifikacja_geo_1', imageOne)
-        writeTiff('unifikacja_geo_2', imageTwo)
+        #unification_Grayscale_Geometric(imageOne, imageTwo)
+        #writeTiff('unifikacja_geo_1', imageOne)
+        #writeTiff('unifikacja_geo_2', imageTwo)
 
-        unification_Grayscale_Resolution(imageOne, imageTwo)
+        #unification_Grayscale_Resolution(imageOne, imageTwo)
 
-        writeTiff('unifikacja_res_1', imageOne)
-        writeTiff('unifikacja_res_2', imageTwo)
+        #writeTiff('unifikacja_res_1', imageOne)
+        #writeTiff('unifikacja_res_2', imageTwo)
 
-        #writeTiff('kopia1', imageOne)
+        writeTiff('kopia2012', imageOne)
 
         #print(imageOne.imageBitsColor)
         #print(imageOne.imageColor)

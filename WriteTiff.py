@@ -302,8 +302,8 @@ def writeTiff(name, image):
     byteNextOffsetIDF = plikRead.read(4)
     plikWrite.write(byteNextOffsetIDF)
 
+    # Zapis w pliku lokalizacji obrazu, gdzie w pliku znajduje sie dane obrazu
     image.imageDataStripOffset = []
-
     if image.imageRowsPerStrip == 1:
 
         plikWrite.seek(tag_273)
@@ -359,6 +359,10 @@ def writeTiff(name, image):
                                 tempX = 0
                                 tempY += 1
                                 break
+
+                        if len(bits) != 8:
+                            for l in range(len(bits), 8):
+                                bits += "0"
 
                         tempb = int(bits, 2)
                         byte = tempb.to_bytes(1, byteorder=image.imageTiffOrder)
