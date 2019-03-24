@@ -206,6 +206,11 @@ def unification_RGB_Resolution(image1, image2):
                 for l in range(3):
                     image1.imageBitsColor[l] = 8
 
+                for i in range(image1.oldImageLength):
+                    for j in range(image1.oldImageWidth):
+                        for k in range(3):
+                            image1.oldImageData[i][j][k] = image1.oldImageData[i][j][k] * 16
+
             else:
                 if image2.imageBitsColor[0] == 4:
                     for i in range(image2.imageLength):
@@ -214,6 +219,11 @@ def unification_RGB_Resolution(image1, image2):
                                 image2.imageData[i][j][k] = image2.imageData[i][j][k] * 16
                     for l in range(3):
                         image2.imageBitsColor[l] = 8
+
+                    for i in range(image2.oldImageLength):
+                        for j in range(image2.oldImageWidth):
+                            for k in range(3):
+                                image2.oldImageData[i][j][k] = image2.oldImageData[i][j][k] * 16
 
                 else:
                     raise Exception("programu 3")

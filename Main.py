@@ -11,7 +11,7 @@ from WriteTiff import writeTiff
 if __name__ == "__main__":
 
     try:
-        nameFIleONE = 'img/2012.tif'
+        nameFIleONE = 'img/mrowkaBinarnaWakanse.tif'
         nameFileTWO = 'img/gMessi100.tif'
 
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
         #imageTwo = Image(readFileTwo)
 
         #unification_Grayscale_Geometric(imageOne, imageTwo)
-        #writeTiff('unifikacja_geo_1', imageOne)
+        writeTiff('unifikacja_geo_1', imageOne)
         #writeTiff('unifikacja_geo_2', imageTwo)
 
         #unification_Grayscale_Resolution(imageOne, imageTwo)
@@ -41,13 +41,13 @@ if __name__ == "__main__":
         #writeTiff('unifikacja_res_1', imageOne)
         #writeTiff('unifikacja_res_2', imageTwo)
 
-        writeTiff('kopia2012', imageOne)
+        #writeTiff('kopia2012', imageOne)
 
         #print(imageOne.imageBitsColor)
         #print(imageOne.imageColor)
         #writeTiff('kopia2', imageTwo)
 
-        #ReadTiff("results/3.tif")
+        #ReadTiff("results/20190324_022746_unifikacja_geo_1.tif")
 
     except Exception as e:
         print("BLAD %s" %e)

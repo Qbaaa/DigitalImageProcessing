@@ -221,6 +221,9 @@ class ReadTiff:
                 if self.compression == 1:
                     self.noCompression(plik)
 
+#            for i in range(self.imageLength):
+#                print(self.imageData[i])
+
             plik.close()
 
         finally:
@@ -407,7 +410,49 @@ class ReadTiff:
 
                 else:
                     if self.imageBitsColor[0] == 4:
-                        raise Exception("brak implementacji dla wczytywanie obrazów RGB 12 bitowych.")
+                        for x in range(0, self.rowsPerStrip):
+                            plik.seek(self.imageDataStripOffset[x])
+
+                            for y in range(0, self.imageDataStripByteCounts[x]):
+                                byte = plik.read(1)
+                                data = int.from_bytes(byte, byteorder=self.tiffOrder)
+                                bits = bin(data)
+                                bits = bits[2:len(bits)]
+                                bits = bits.zfill(8)
+
+                                for z in range(2):
+                                    bits4 = ""
+
+                                    if z == 0:
+                                        bits4 = bits[0:4]
+                                        tempb = int(bits4, 2)
+                                        self.imageData[tempY][tempX][tempRGB] = int(tempb)
+                                        tempRGB += 1
+                                        if tempRGB == 3:
+                                            tempRGB = 0
+                                            tempX += 1
+
+                                        if tempX == self.imageWidth:
+                                            tempY += 1
+                                            tempX = 0
+                                            break
+
+                                    else:
+                                        if z == 1:
+                                            bits4 = bits[4:8]
+                                            tempb = int(bits4, 2)
+                                            self.imageData[tempY][tempX][tempRGB] = int(tempb)
+                                            tempRGB += 1
+                                            if tempRGB == 3:
+                                                tempRGB = 0
+                                                tempX += 1
+
+                                            if tempX == self.imageWidth:
+                                                tempX += 1
+                                                tempY = 0
+                                                break
+
+                        #raise Exception("brak implementacji dla wczytywanie obrazów RGB 12 bitowych.")
 
                     else:
                         raise Exception("program obsługuje tylko wczytywanie obrazów RGB 12, 24 bitowych.")

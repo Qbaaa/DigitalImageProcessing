@@ -31,7 +31,17 @@ def writeTiff(name, image):
                         raise Exception("program obsługuje tylko zapisywanie obrazów SZARYCH 1,4,8 bitowych.")
 
         else:
-            image.imageDataStripByteCounts.append(image.imageLength * image.imageWidth * 3)
+            if image.imageBitsColor[0] == 8:
+                image.imageDataStripByteCounts.append(image.imageLength * image.imageWidth * 3)
+
+            else:
+                if image.imageBitsColor[0] == 4:
+                    temp_strip_byte_count = ceil((image.imageWidth*len(image.imageBitsColor))/2)
+                    temp_strip_byte_count = temp_strip_byte_count * image.imageLength
+                    image.imageDataStripByteCounts.append(temp_strip_byte_count)
+
+                else:
+                    raise Exception("program obsługuje tylko zapisywanie obrazów RGB 12,24 bitowych.")
 
     else:
         if image.imageColor == 0 or image.imageColor == 1:
@@ -56,17 +66,29 @@ def writeTiff(name, image):
                         raise Exception("program obsługuje tylko zapisywanie obrazów SZARYCH 1,4,8 bitowych.")
 
         else:
-            temp_byte_counts = image.imageLength * image.imageWidth * 3
+            if image.imageBitsColor[0] == 8:
+                temp_byte_counts = image.imageLength * image.imageWidth * 3
+
+            else:
+                if image.imageBitsColor[0] == 4:
+                    temp_strip_byte_count = ceil((image.imageWidth*len(image.imageBitsColor))/2)
+                    temp_strip_byte_count = temp_strip_byte_count * image.imageLength
+                    temp_byte_counts = temp_strip_byte_count
+
+                else:
+                    raise Exception("program obsługuje tylko zapisywanie obrazów RGB 12,24 bitowych.")
 
         for i in range(image.imageRowsPerStrip):
 
             if image.imageRowsPerStrip - 1 == i:
                 image.imageDataStripByteCounts.append(temp_byte_counts)
             else:
-                image.imageDataStripByteCounts.append(ceil((image.imageWidth * image.imageBitsColor[0])/8) * len(image.imageBitsColor) * temp_RowsPerStrip)
+                #image.imageDataStripByteCounts.append(ceil((image.imageWidth * image.imageBitsColor[0])/8) * len(image.imageBitsColor) * temp_RowsPerStrip)
+                image.imageDataStripByteCounts.append(ceil((image.imageWidth * len(image.imageBitsColor) * image.imageBitsColor[0])/8) * temp_RowsPerStrip)
 
-            temp_byte_counts = temp_byte_counts - (ceil((image.imageWidth * image.imageBitsColor[0])/8) * len(image.imageBitsColor) * temp_RowsPerStrip)
+            temp_byte_counts = temp_byte_counts - (ceil((image.imageWidth * len(image.imageBitsColor) * image.imageBitsColor[0])/8) * temp_RowsPerStrip)
 
+    print(image.imageDataStripByteCounts)
     dateTime = datetime.now().strftime("%Y%m%d_%H%M%S_")
     nameWrite = "results/" + dateTime + name + ".tif"
 
@@ -418,23 +440,79 @@ def writeTiff(name, image):
         tempY = 0
         tempRGB = 0
 
-        for i in range(len(image.imageDataStripOffset)):
-            plikWrite.seek(image.imageDataStripOffset[i])
+        if image.imageBitsColor[0] == 8:
 
-            for j in range(image.imageDataStripByteCounts[i]):
+            for i in range(len(image.imageDataStripOffset)):
+                plikWrite.seek(image.imageDataStripOffset[i])
 
-                temp = image.imageData[tempY][tempX][tempRGB]
-                byte = temp.to_bytes(1, byteorder=image.imageTiffOrder)
-                plikWrite.write(byte)
-                tempRGB = tempRGB + 1
+                for j in range(image.imageDataStripByteCounts[i]):
 
-                if tempRGB == 3:
-                    tempX = tempX + 1
-                    tempRGB = 0
+                    temp = image.imageData[tempY][tempX][tempRGB]
+                    byte = temp.to_bytes(1, byteorder=image.imageTiffOrder)
+                    plikWrite.write(byte)
+                    tempRGB = tempRGB + 1
 
-                if tempX == image.imageWidth:
-                    tempX = 0
-                    tempY = tempY + 1
+                    if tempRGB == 3:
+                        tempX = tempX + 1
+                        tempRGB = 0
+
+                    if tempX == image.imageWidth:
+                        tempX = 0
+                        tempY = tempY + 1
+
+        else:
+            if image.imageBitsColor[0] == 4:
+
+                for i in range(len(image.imageDataStripOffset)):
+                    plikWrite.seek(image.imageDataStripOffset[i])
+
+                    for j in range(image.imageDataStripByteCounts[i]):
+                        bits = ""
+
+                        for z in range(2):
+
+                            if z == 0:
+                                temp = image.imageData[tempY][tempX][tempRGB]
+                                bits4 = bin(temp)
+                                bits4 = bits4[2:len(bits4)]
+                                bits4 = bits4.zfill(4)
+                                bits += bits4
+                                tempRGB += 1
+                                if tempRGB == 3:
+                                    tempRGB = 0
+                                    tempX += 1
+
+                                if tempX == image.imageWidth:
+                                    tempY += 1
+                                    tempX = 0
+                                    break
+
+                            else:
+                                if z == 1:
+                                    temp = image.imageData[tempY][tempX][tempRGB]
+                                    bits4 = bin(temp)
+                                    bits4 = bits4[2:len(bits4)]
+                                    bits4 = bits4.zfill(4)
+                                    bits += bits4
+                                    tempRGB += 1
+                                    if tempRGB == 3:
+                                        tempRGB = 0
+                                        tempX += 1
+
+                                    if tempX == image.imageWidth:
+                                        tempY += 1
+                                        tempX = 0
+                                        break
+
+                        if len(bits) == 4:
+                            bits += "0000"
+
+                        tempb = int(bits, 2)
+                        byte = tempb.to_bytes(1, byteorder=image.imageTiffOrder)
+                        plikWrite.write(byte)
+
+            else:
+                raise Exception("program obsługuje tylko zapisywanie obrazów RGB 12,24 bitowych.")
 
     plikWrite.close()
     plikRead.close()
