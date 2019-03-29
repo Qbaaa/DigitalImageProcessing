@@ -4,7 +4,7 @@ from ImageUnification import unification_Grayscale_Geometric, unification_RGB_Ge
 from Image import Image
 from ReadTiff import ReadTiff
 from WriteTiff import writeTiff
-from arithmetic_gray import sum_const_grayscale, sum_two_images_grayscale
+from arithmetic_gray import sum_const_grayscale, sum_two_images_grayscale, multiplication_const_grayscale, multiplication_two_images_grayscale
 
 if __name__ == "__main__":
 
@@ -19,10 +19,12 @@ if __name__ == "__main__":
         imageTwo = Image(readFileTwo)
 
         unification_Grayscale_Geometric(imageOne, imageTwo)
+        writeTiff("unf_geo", imageOne)
 
         unification_Grayscale_Resolution(imageOne, imageTwo)
+        writeTiff("unf_res", imageOne)
 
-        sum_two_images_grayscale(imageOne, imageTwo)
+        #multiplication_two_images_grayscale(imageOne, imageTwo)
 
     except Exception as e:
         print("BLAD %s" %e)
