@@ -4,6 +4,7 @@ from math import floor, ceil
 
 def writeTiff(name, image):
 
+    # obliczenie rozmiaru danych obrazu
     global tag_273, type_273
     temp_RowsPerStrip = image.constRowsPerStrip
     image.imageRowsPerStrip = floor((image.imageLength + image.constRowsPerStrip - 1)/image.constRowsPerStrip)
@@ -114,6 +115,8 @@ def writeTiff(name, image):
     plikWrite.write(byteNumerDE)
 
     newOffset = tempOffsetIDF + 2 + countNumerDirectoryEntries * 12 + 4
+
+    # zapis tagow w pliku tiff
     for x in range(0, countNumerDirectoryEntries):
 
         byteTag = plikRead.read(2)

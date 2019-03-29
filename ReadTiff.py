@@ -24,7 +24,8 @@ class ReadTiff:
 
         global plik
         try:
-            self.nameImage = nameFile 
+            self.nameImage = nameFile
+            #czytanie pierwszych 8 byte pliku
             plik = open(nameFile, 'rb')
             byteOrder = plik.read(2)
             byteTiffIs = plik.read(2)
@@ -221,14 +222,12 @@ class ReadTiff:
                 if self.compression == 1:
                     self.noCompression(plik)
 
-#            for i in range(self.imageLength):
-#                print(self.imageData[i])
-
             plik.close()
 
         finally:
             plik.close()
 
+    # funkcja, ktora sprawddza czy watrosc znajduje sie w tagu tiff-a czy w innym miejscu pliku
     def typeVariable(self, t, c):
 
         bytes = -1

@@ -355,9 +355,9 @@ def unification_Grayscale_Resolution(image1, image2):
                         for j in range(image1.imageWidth):
                             image1.imageData[i][j][0] = 255 - image1.imageData[i][j][0]
 
-                for i in range(image1.oldImageLength):
-                    for j in range(image1.oldImageWidth):
-                        image1.oldImageData[i][j][0] = 255 - image1.oldImageData[i][j][0]
+                    for i in range(image1.oldImageLength):
+                        for j in range(image1.oldImageWidth):
+                            image1.oldImageData[i][j][0] = 255 - image1.oldImageData[i][j][0]
 
                 else:
                     if image1.imageBitsColor[0] == 4:
