@@ -1,5 +1,3 @@
-from math import ceil
-import numpy as np
 from ImageUnification import unification_Grayscale_Geometric, unification_RGB_Geometric, unification_RGB_Resolution, unification_Grayscale_Resolution
 from Image import Image
 from ReadTiff import ReadTiff
@@ -9,8 +7,8 @@ from arithmetic_gray import sum_const_grayscale, sum_two_images_grayscale, multi
 if __name__ == "__main__":
 
     try:
-        nameFIleONE = 'img/gMessi100.tif'
-        nameFileTWO = 'img/groza.tif'
+        nameFIleONE = 'img/RGBMessi.tif'
+        nameFileTWO = 'img/RGBimage.tif'
 
         readFileOne = ReadTiff(nameFIleONE)
         imageOne = Image(readFileOne)
@@ -18,13 +16,11 @@ if __name__ == "__main__":
         readFileTwo = ReadTiff(nameFileTWO)
         imageTwo = Image(readFileTwo)
 
-        unification_Grayscale_Geometric(imageOne, imageTwo)
-        writeTiff("unf_geo", imageOne)
+        unification_RGB_Geometric(imageOne, imageTwo)
 
-        unification_Grayscale_Resolution(imageOne, imageTwo)
-        writeTiff("unf_res", imageOne)
-
-        #multiplication_two_images_grayscale(imageOne, imageTwo)
+        unification_RGB_Resolution(imageOne, imageTwo)
+        writeTiff("1", imageOne)
+        writeTiff("2", imageTwo)
 
     except Exception as e:
         print("BLAD %s" %e)

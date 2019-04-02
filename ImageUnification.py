@@ -184,16 +184,16 @@ def unification_RGB_Resolution(image1, image2):
 
         if lenght1 > lenght2:
             scaleLenght1 = 1
-            scaleLenght2 = lenght1/lenght2
+            scaleLenght2 = lenght2/lenght1
         else:
-            scaleLenght1 = lenght2/lenght1
+            scaleLenght1 = lenght1/lenght2
             scaleLenght2 = 1
 
         if width1 > width2:
             scaleWidth1 = 1
-            scaleWidth2 = width1 / width2
+            scaleWidth2 = width2 / width1
         else:
-            scaleWidth1 = width2 / width1
+            scaleWidth1 = width1 / width2
             scaleWidth2 = 1
 
         if image1.imageBitsColor[0] != image2.imageBitsColor[0]:
@@ -231,63 +231,81 @@ def unification_RGB_Resolution(image1, image2):
         else:
             print("Rozdzielczosc obrazow 1 i 2 RGB jest taka sama.")
 
-        tempImage1 = np.zeros((image1.imageLength, image1.imageWidth, 3), dtype=np.uint8)
-        tempImage2 = np.zeros((image2.imageLength, image2.imageWidth, 3), dtype=np.uint8)
-        temp = np.zeros((image1.imageLength, image1.imageWidth, 3), dtype=np.uint8)
+        if scaleWidth1 != 1 or scaleLenght1 != 1:
 
-        for i in range(lenght1):
-            for j in range(width1):
-                tempImage1[int(scaleLenght1*i), int(round(scaleWidth1*j))] = image1.oldImageData[i][j]
+            for j in range(image1.imageLength):
+                for i in range(image1.imageWidth):
+                    x = i * scaleWidth1
+                    y = j * scaleLenght1
 
-        for i in range(lenght2):
-            for j in range(width2):
-                tempImage2[int(scaleLenght2*i), int(round(scaleWidth2*j))] = image2.oldImageData[i][j]
+                    b = x - int(x)
+                    a = y - int(y)
 
-        for i in range(image2.imageLength):
-            for j in range(image2.imageWidth):
-                r, g, b = 0, 0, 0
-                n = 0
-                temp[i, j] = tempImage2[i, j]
+                    if int(y) + 1 >= image1.oldImageLength:
+                        tempy = image1.oldImageLength - 1
+                    else:
+                        tempy = int(y) + 1
 
-                if (tempImage2[i, j][0] < 1) & (tempImage2[i, j][1] < 1) & (tempImage2[i, j][2] < 1):
-                    for iOff in range(-1, 2):
-                        for jOff in range(-1, 2):
-                            iSafe = i if ((i + iOff) > (lenght1 - 2)) | ((i + iOff) < 0) else (i + iOff)
-                            jSafe = j if ((j + jOff) > (width1 - 2)) | ((j + jOff) < 0) else (j + jOff)
+                    if int(x) + 1 >= image1.oldImageWidth:
+                        tempx = image1.oldImageWidth - 1
+                    else:
+                        tempx = int(x) + 1
 
-                            if (tempImage2[iSafe, jSafe][0] > 0) | (tempImage2[iSafe, jSafe][1] > 0) | (tempImage2[iSafe, jSafe][2] > 0):
-                                r += tempImage2[iSafe, jSafe][0]
-                                g += tempImage2[iSafe, jSafe][1]
-                                b += tempImage2[iSafe, jSafe][2]
-                                n += 1
-                                temp[i, j] = (r/n, g/n, b/n)
-                tempImage2[i, j] = temp[i, j]
+                    Fa0 = (1 - a) * image1.oldImageData[int(y)][int(x)][0] + a * image1.oldImageData[tempy][int(x)][0]
+                    Fa1 = (1 - a) * image1.oldImageData[int(y)][tempx][0] + a * image1.oldImageData[tempy][tempx][0]
+                    Fab = (1 - b) * Fa0 + b * Fa1
 
-        for i in range(image1.imageLength):
-            for j in range(image1.imageWidth):
-                r, g, b = 0, 0, 0
-                n = 0
-                temp[i, j] = tempImage1[i, j]
+                    image1.imageData[j][i][0] = int(round(Fab))
 
-                if (tempImage1[i, j][0] < 1) & (tempImage1[i, j][1] < 1) & (tempImage1[i, j][2] < 1):
-                    for iOff in range(-1, 2):
-                        for jOff in range(-1, 2):
-                            iSafe = i if ((i + iOff) > (lenght2 - 2)) | ((i + iOff) < 0) else (i + iOff)
-                            jSafe = j if ((j + jOff) > (width2 - 2)) | ((j + jOff) < 0) else (j + jOff)
+                    Fa0 = (1 - a) * image1.oldImageData[int(y)][int(x)][1] + a * image1.oldImageData[tempy][int(x)][1]
+                    Fa1 = (1 - a) * image1.oldImageData[int(y)][tempx][1] + a * image1.oldImageData[tempy][tempx][1]
+                    Fab = (1 - b) * Fa0 + b * Fa1
 
-                            if (tempImage1[iSafe, jSafe][0] > 0) | (tempImage1[iSafe, jSafe][1] > 0) | (tempImage1[iSafe, jSafe][2] > 0):
-                                r += tempImage1[iSafe, jSafe][0]
-                                g += tempImage1[iSafe, jSafe][1]
-                                b += tempImage1[iSafe, jSafe][2]
-                                n += 1
-                                temp[i, j] = (r/n, g/n, b/n)
-                tempImage1[i, j] = temp[i, j]
+                    image1.imageData[j][i][1] = int(round(Fab))
 
-        for i in range(image1.imageLength):
-            for j in range(image1.imageWidth):
-                for k in range(3):
-                    image1.imageData[i][j][k] = int(tempImage1[i, j, k])
-                    image2.imageData[i][j][k] = int(tempImage2[i, j, k])
+                    Fa0 = (1 - a) * image1.oldImageData[int(y)][int(x)][2] + a * image1.oldImageData[tempy][int(x)][2]
+                    Fa1 = (1 - a) * image1.oldImageData[int(y)][tempx][2] + a * image1.oldImageData[tempy][tempx][2]
+                    Fab = (1 - b) * Fa0 + b * Fa1
+
+                    image1.imageData[j][i][2] = int(round(Fab))
+
+        if scaleWidth2 != 1 or scaleLenght2 != 1:
+
+            for j in range(image2.imageLength):
+                for i in range(image2.imageWidth):
+                    x = i * scaleWidth2
+                    y = j * scaleLenght2
+
+                    b = x - int(x)
+                    a = y - int(y)
+
+                    if int(y) + 1 >= image2.oldImageLength:
+                        tempy = image2.oldImageLength - 1
+                    else:
+                        tempy = int(y) + 1
+
+                    if int(x) + 1 >= image2.oldImageWidth:
+                        tempx = image2.oldImageWidth - 1
+                    else:
+                        tempx = int(x) + 1
+
+                    Fa0 = (1 - a) * image2.oldImageData[int(y)][int(x)][0] + a * image2.oldImageData[tempy][int(x)][0]
+                    Fa1 = (1 - a) * image2.oldImageData[int(y)][tempx][0] + a * image2.oldImageData[tempy][tempx][0]
+                    Fab = (1 - b) * Fa0 + b * Fa1
+
+                    image2.imageData[j][i][0] = int(round(Fab))
+
+                    Fa0 = (1 - a) * image2.oldImageData[int(y)][int(x)][1] + a * image2.oldImageData[tempy][int(x)][1]
+                    Fa1 = (1 - a) * image2.oldImageData[int(y)][tempx][1] + a * image2.oldImageData[tempy][tempx][1]
+                    Fab = (1 - b) * Fa0 + b * Fa1
+
+                    image2.imageData[j][i][1] = int(round(Fab))
+
+                    Fa0 = (1 - a) * image2.oldImageData[int(y)][int(x)][2] + a * image2.oldImageData[tempy][int(x)][2]
+                    Fa1 = (1 - a) * image2.oldImageData[int(y)][tempx][2] + a * image2.oldImageData[tempy][tempx][2]
+                    Fab = (1 - b) * Fa0 + b * Fa1
+
+                    image2.imageData[j][i][2] = int(round(Fab))
 
     else:
         raise Exception("Ta funkcja służy do ujednolicenia rozdzielczosciowo obrazów RGB, a ktorys obraz jest SZARY.")
@@ -302,16 +320,16 @@ def unification_Grayscale_Resolution(image1, image2):
 
     if lenght1 > lenght2:
         scaleLenght1 = 1
-        scaleLenght2 = lenght1/lenght2
+        scaleLenght2 = lenght2/lenght1
     else:
-        scaleLenght1 = lenght2/lenght1
+        scaleLenght1 = lenght1/lenght2
         scaleLenght2 = 1
 
     if width1 > width2:
         scaleWidth1 = 1
-        scaleWidth2 = width1 / width2
+        scaleWidth2 = width2 / width1
     else:
-        scaleWidth1 = width2 / width1
+        scaleWidth1 = width1 / width2
         scaleWidth2 = 1
 
     if (image1.imageColor == 0 or image1.imageColor == 1) and (image2.imageColor == 0 or image2.imageColor == 1):
@@ -402,58 +420,57 @@ def unification_Grayscale_Resolution(image1, image2):
         else:
             print("Kolor obrazy maja taki sam.")
 
-        tempImage1 = np.zeros((image1.imageLength, image1.imageWidth), dtype=np.uint8)
-        tempImage2 = np.zeros((image2.imageLength, image2.imageWidth), dtype=np.uint8)
-        temp = np.zeros((image1.imageLength, image1.imageWidth), dtype=np.uint8)
+        if scaleWidth1 != 1 or scaleLenght1 != 1:
 
-        for i in range(lenght1):
-            for j in range(width1):
-                tempImage1[int(scaleLenght1*i), int(round(scaleWidth1*j))] = image1.oldImageData[i][j][0]
+            for j in range(image1.imageLength):
+                for i in range(image1.imageWidth):
+                    x = i * scaleWidth1
+                    y = j * scaleLenght1
 
-        for i in range(lenght2):
-            for j in range(width2):
-                tempImage2[int(scaleLenght2*i), int(round(scaleWidth2*j))] = image2.oldImageData[i][j][0]
+                    b = x - int(x)
+                    a = y - int(y)
 
-        for i in range(image2.imageLength):
-            for j in range(image2.imageWidth):
-                gray = 0
-                n = 0
-                temp[i, j] = tempImage2[i, j]
+                    if int(y) + 1 >= image1.oldImageLength:
+                        tempy = image1.oldImageLength - 1
+                    else:
+                        tempy = int(y) + 1
 
-                if tempImage2[i, j] < 1:
-                    for iOff in range(-1, 2):
-                        for jOff in range(-1, 2):
-                            iSafe = i if ((i + iOff) > (lenght1 - 2)) | ((i + iOff) < 0) else (i + iOff)
-                            jSafe = j if ((j + jOff) > (width1 - 2)) | ((j + jOff) < 0) else (j + jOff)
+                    if int(x) + 1 >= image1.oldImageWidth:
+                        tempx = image1.oldImageWidth - 1
+                    else:
+                        tempx = int(x) + 1
 
-                            if tempImage2[iSafe, jSafe] > 0:
-                                gray += tempImage2[iSafe, jSafe]
-                                n += 1
-                                temp[i, j] = gray/n
-                tempImage2[i, j] = temp[i, j]
+                    Fa0 = (1 - a) * image1.oldImageData[int(y)][int(x)][0] + a * image1.oldImageData[tempy][int(x)][0]
+                    Fa1 = (1 - a) * image1.oldImageData[int(y)][tempx][0] + a * image1.oldImageData[tempy][tempx][0]
+                    Fab = (1 - b) * Fa0 + b * Fa1
 
-        for i in range(image1.imageLength):
-            for j in range(image1.imageWidth):
-                gray = 0
-                n = 0
-                temp[i, j] = tempImage1[i, j]
+                    image1.imageData[j][i][0] = int(round(Fab))
 
-                if tempImage1[i, j] < 1:
-                    for iOff in range(-1, 2):
-                        for jOff in range(-1, 2):
-                            iSafe = i if ((i + iOff) > (lenght2 - 2)) | ((i + iOff) < 0) else (i + iOff)
-                            jSafe = j if ((j + jOff) > (width2 - 2)) | ((j + jOff) < 0) else (j + jOff)
+        if scaleWidth2 != 1 or scaleLenght2 != 1:
 
-                            if tempImage1[iSafe, jSafe] > 0:
-                                gray += tempImage1[iSafe, jSafe]
-                                n += 1
-                                temp[i, j] = gray/n
-                tempImage1[i, j] = temp[i, j]
+            for j in range(image2.imageLength):
+                for i in range(image2.imageWidth):
+                    x = i * scaleWidth2
+                    y = j * scaleLenght2
 
-        for i in range(image1.imageLength):
-            for j in range(image1.imageWidth):
-                image1.imageData[i][j][0] = int(tempImage1[i, j])
-                image2.imageData[i][j][0] = int(tempImage2[i, j])
+                    b = x - int(x)
+                    a = y - int(y)
+
+                    if int(y) + 1 >= image2.oldImageLength:
+                        tempy = image2.oldImageLength - 1
+                    else:
+                        tempy = int(y) + 1
+
+                    if int(x) + 1 >= image2.oldImageWidth:
+                        tempx = image2.oldImageWidth - 1
+                    else:
+                        tempx = int(x) + 1
+
+                    Fa0 = (1 - a) * image2.oldImageData[int(y)][int(x)][0] + a * image2.oldImageData[tempy][int(x)][0]
+                    Fa1 = (1 - a) * image2.oldImageData[int(y)][tempx][0] + a * image2.oldImageData[tempy][tempx][0]
+                    Fab = (1 - b) * Fa0 + b * Fa1
+
+                    image2.imageData[j][i][0] = int(round(Fab))
 
     else:
         raise Exception("Ta funkcja służy do ujednolicenia rozdzielczosciowo obrazów SZARYCH, a ktorys obraz jest RGB.")
