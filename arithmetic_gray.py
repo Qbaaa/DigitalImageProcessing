@@ -214,3 +214,97 @@ def multiplication_two_images_grayscale(image1, image2):
             image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
 
     writeTiff('normalization_multi_const', image1)
+
+
+# mieszanie obrazow z okreslonym wspolczynnikiem
+def mixing_images(image1, image2, scales=0.0):
+
+    global maxBitsColor
+    fmax = 0
+    fmin = 256
+
+    if image1.imageBitsColor[0] == image2.imageBitsColor[0] and (image1.imageLength == image2.imageLength) and (image1.imageWidth == image2.imageWidth):
+
+        if not (0.0 <= scales <= 1.0):
+            raise Exception("program miesza obrazy SZARE z waga z zakresu 0.0-1.0, a podana liczba "
+                            "to %f." % scales)
+
+        if image1.imageBitsColor[0] == 4:
+            maxBitsColor = 15
+
+        elif image1.imageBitsColor[0] == 8:
+            maxBitsColor = 255
+
+    else:
+        raise Exception("program miesza jedynie obrazy SZARE 4, 8 bitowe oraz obrazy musza miec takie same rozmiary.")
+
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            tempMix = ceil(scales * image1.imageData[i][j][0] + (1 - scales) * image2.imageData[i][j][0])
+            image1.imageData[i][j][0] = tempMix
+
+            if tempMix > fmax:
+                fmax = tempMix
+
+            if tempMix < fmin:
+                fmin = tempMix
+
+    writeTiff('mix_two_image', image1)
+    # normalizacja
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
+
+    writeTiff('normalization_mix_two_image', image1)
+
+
+# potegowanie obrazu (z zadana potega)
+def pow_image(image1, p=1.0):
+
+    global maxBitsColor
+    fmax = 0
+    fmin = 256
+    fmaximage = 0
+
+    if not (0.0 < p):
+        raise Exception("program poteguje obraz SZARY z zadana potega z zakresu p > 0.0, a podana liczba "
+                        "to %f." % p)
+
+    if image1.imageBitsColor[0] == 4:
+        maxBitsColor = 15
+    elif image1.imageBitsColor[0] == 8:
+        maxBitsColor = 255
+
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            tempPow = image1.imageData[i][j][0]
+            if tempPow > fmaximage:
+                fmaximage = tempPow
+
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            tempPow = image1.imageData[i][j][0]
+
+            if tempPow == maxBitsColor:
+                tempPow = maxBitsColor
+            elif tempPow == 0:
+                tempPow = 0
+            else:
+                tempPow = pow(image1.imageData[i][j][0] / fmaximage, p) * maxBitsColor
+
+            image1.imageData[i][j][0] = ceil(tempPow)
+
+            if tempPow > fmax:
+                fmax = tempPow
+
+            if tempPow < fmin:
+                fmin = tempPow
+
+    writeTiff('pow_image', image1)
+    # normalizacja
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
+
+    writeTiff('normalization_pow_image', image1)
+
