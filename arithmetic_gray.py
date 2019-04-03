@@ -217,7 +217,7 @@ def multiplication_two_images_grayscale(image1, image2):
 
 
 # mieszanie obrazow z okreslonym wspolczynnikiem
-def mixing_images(image1, image2, scales=0.0):
+def mixing_images_grayscale(image1, image2, scales=0.0):
 
     global maxBitsColor
     fmax = 0
@@ -259,7 +259,7 @@ def mixing_images(image1, image2, scales=0.0):
 
 
 # potegowanie obrazu (z zadana potega)
-def pow_image(image1, p=1.0):
+def pow_image_grayscale(image1, p=1.0):
 
     global maxBitsColor
     fmax = 0
@@ -308,3 +308,103 @@ def pow_image(image1, p=1.0):
 
     writeTiff('normalization_pow_image', image1)
 
+
+# dzielenie obrazu przez (zadana) liczbe
+def division_const_grayscale(image1, const=1):
+
+    Qmax = 0
+    fmax = 0
+    fmin = 256
+
+    if image1.imageBitsColor[0] == 4:
+
+        maxBitsColor = 15
+        if not (0 < const <= 15):
+            raise Exception("program do obrazow SZARYCH 4 bitowych moze dzielic liczbe z zakresu 0-15, a podana liczba "
+                            "to %d." % const)
+    elif image1.imageBitsColor[0] == 8:
+
+        maxBitsColor = 255
+        if not (0 < const <= 255):
+            raise Exception("program do obrazow SZARYCH 8 bitowych moze dzielic liczbe z zakresu 0-255, a podana "
+                            "podana to %d." % const)
+    else:
+        raise Exception("program dzieli jedynie obrazy SZARE 4, 8 bitowe ze stala")
+
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            tempDiv = image1.imageData[i][j][0] + const
+
+            if Qmax < tempDiv:
+                Qmax = tempDiv
+
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            tempDiv = image1.imageData[i][j][0] + const
+
+            resultDiv = (tempDiv * maxBitsColor) / Qmax
+
+            image1.imageData[i][j][0] = ceil(resultDiv)
+
+            if resultDiv > fmax:
+                fmax = resultDiv
+
+            if resultDiv < fmin:
+                fmin = resultDiv
+
+    writeTiff('div_image_const', image1)
+    # normalizacja
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
+
+    writeTiff('normalization_div_image_const', image1)
+
+
+# dzielenie obrazu przez inny obraz
+def division_two_iamges_grayscale(image1, image2):
+
+    global maxBitsColor
+    fmax = 0
+    fmin = 256
+    Qmax = 0
+
+    if image1.imageBitsColor[0] == image2.imageBitsColor[0] and (image1.imageLength == image2.imageLength) and (image1.imageWidth == image2.imageWidth):
+
+        if image1.imageBitsColor[0] == 4:
+            maxBitsColor = 15
+
+        elif image1.imageBitsColor[0] == 8:
+            maxBitsColor = 255
+
+    else:
+        raise Exception("program dzieli jedynie obrazy SZARE 4, 8 bitowe oraz obrazy musza miec takie same rozmiary.")
+
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            tempDiv = image1.imageData[i][j][0] + image2.imageData[i][j][0]
+
+            if Qmax < tempDiv:
+                Qmax = tempDiv
+
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            tempDiv = image1.imageData[i][j][0] + image2.imageData[i][j][0]
+
+            resultDiv = (tempDiv * maxBitsColor) / Qmax
+
+            image1.imageData[i][j][0] = ceil(resultDiv)
+
+            if resultDiv > fmax:
+                fmax = resultDiv
+
+            if resultDiv < fmin:
+                fmin = resultDiv
+
+    writeTiff('div_two_images', image1)
+    # normalizacja
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
+
+    writeTiff('normalization_div_two_images', image1)
