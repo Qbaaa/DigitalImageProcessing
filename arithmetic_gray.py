@@ -1,5 +1,5 @@
 # ZADANIE 2
-from math import ceil
+from math import ceil, log
 from WriteTiff import writeTiff
 
 
@@ -259,7 +259,7 @@ def mixing_images_grayscale(image1, image2, scales=0.0):
 
 
 # potegowanie obrazu (z zadana potega)
-def pow_image_grayscale(image1, p=1.0):
+def pow_image_grayscale(image1, p=1):
 
     global maxBitsColor
     fmax = 0
@@ -267,8 +267,8 @@ def pow_image_grayscale(image1, p=1.0):
     fmaximage = 0
 
     if not (0.0 < p):
-        raise Exception("program poteguje obraz SZARY z zadana potega z zakresu p > 0.0, a podana liczba "
-                        "to %f." % p)
+        raise Exception("program poteguje obraz SZARY z zadana potega z zakresu p > 0, a podana liczba "
+                        "to %d." % p)
 
     if image1.imageBitsColor[0] == 4:
         maxBitsColor = 15
@@ -408,3 +408,101 @@ def division_two_iamges_grayscale(image1, image2):
             image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
 
     writeTiff('normalization_div_two_images', image1)
+
+
+# pierwiastkowanie obrazu
+def root_image_grayscale(image1, p=0.5):
+
+    global maxBitsColor
+    fmax = 0
+    fmin = 256
+    fmaximage = 0
+
+    if not (0 < p):
+        raise Exception("program pierwiastkuje obraz SZARY z zadanym parametrem z zakresu p > 0.0, a podana liczba "
+                        "to %f." % p)
+
+    if image1.imageBitsColor[0] == 4:
+        maxBitsColor = 15
+    elif image1.imageBitsColor[0] == 8:
+        maxBitsColor = 255
+
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            tempPow = image1.imageData[i][j][0]
+            if tempPow > fmaximage:
+                fmaximage = tempPow
+
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            tempPow = image1.imageData[i][j][0]
+
+            if tempPow == maxBitsColor:
+                tempPow = maxBitsColor
+            elif tempPow == 0:
+                tempPow = 0
+            else:
+                tempPow = pow(image1.imageData[i][j][0] / fmaximage, p) * maxBitsColor
+
+            image1.imageData[i][j][0] = ceil(tempPow)
+
+            if tempPow > fmax:
+                fmax = tempPow
+
+            if tempPow < fmin:
+                fmin = tempPow
+
+    writeTiff('root_image', image1)
+    # normalizacja
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
+
+    writeTiff('normalization_root_image', image1)
+
+
+# logarytmowanie obrazu
+def log_image_grayscale(image1):
+
+    global maxBitsColor
+    fmax = 0
+    fmin = 256
+    fmaximage = 0
+
+    if image1.imageBitsColor[0] == 4:
+        maxBitsColor = 15
+    elif image1.imageBitsColor[0] == 8:
+        maxBitsColor = 255
+
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            tempLog = image1.imageData[i][j][0]
+
+            if fmaximage < tempLog:
+                fmaximage = tempLog
+
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            tempLog = image1.imageData[i][j][0]
+
+            if tempLog == 0:
+                tempLog = 0
+
+            else:
+                tempLog = (log(1 + tempLog) / log(1 + fmaximage)) * maxBitsColor
+
+            image1.imageData[i][j][0] = ceil(tempLog)
+
+            if tempLog > fmax:
+                fmax = tempLog
+
+            if tempLog < fmin:
+                fmin = tempLog
+
+    writeTiff('log_image', image1)
+    # normalizacja
+    for i in range(image1.imageLength):
+        for j in range(image1.imageWidth):
+            image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
+
+    writeTiff('normalization_log_image', image1)

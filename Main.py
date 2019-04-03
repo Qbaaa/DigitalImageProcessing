@@ -3,7 +3,7 @@ from Image import Image
 from ReadTiff import ReadTiff
 from WriteTiff import writeTiff
 from arithmetic_gray import sum_const_grayscale, sum_two_images_grayscale, multiplication_const_grayscale, \
-    multiplication_two_images_grayscale, mixing_images, pow_image
+    multiplication_two_images_grayscale, mixing_images_grayscale, pow_image_grayscale, log_image_grayscale, root_image_grayscale, division_two_iamges_grayscale, division_const_grayscale
 
 if __name__ == "__main__":
 
@@ -22,7 +22,7 @@ if __name__ == "__main__":
         #unification_Grayscale_Resolution(imageOne, imageTwo)
 
         #mixing_images(imageOne, imageTwo, 0.6)
-        pow_image(imageOne, 3)
+        #pow_image_grayscale(imageOne, 0.5)
 
         #writeTiff("1", imageOne)
         #writeTiff("2", imageTwo)
