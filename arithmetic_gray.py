@@ -3,7 +3,7 @@ from math import ceil, log
 from WriteTiff import writeTiff
 
 
-# suowanie obrazu ze stala
+# sumowanie obrazu ze stala
 def sum_const_grayscale(image1, const=0):
     if image1.imageBitsColor[0] == 4:
 
@@ -36,13 +36,15 @@ def sum_const_grayscale(image1, const=0):
 
     if Qmax > maxBitsColor:
         Dmax = Qmax - maxBitsColor
-        x = ceil((Dmax/maxBitsColor)*100)
-        X = x / 100
+        X = round(Dmax/maxBitsColor, 2)
+
+    if X == 1.0:
+        X = 0.99
 
     # dodawanie
     for i in range(image1.imageLength):
         for j in range(image1.imageWidth):
-            tempSum = round((image1.imageData[i][j][0] - (image1.imageData[i][j][0] * X)) + (const - (const * X)))
+            tempSum = ceil((image1.imageData[i][j][0] - (image1.imageData[i][j][0] * X)) + (const - (const * X)))
             image1.imageData[i][j][0] = tempSum
 
             if tempSum > fmax:
@@ -91,8 +93,10 @@ def sum_two_images_grayscale(image1, image2):
 
     if Qmax > maxBitsColor:
         Dmax = Qmax - maxBitsColor
-        x = ceil((Dmax/maxBitsColor)*100)
-        X = x / 100
+        X = round(Dmax/maxBitsColor, 2)
+
+    if X == 1.0:
+        X = 0.99
 
     for i in range(image1.imageLength):
         for j in range(image1.imageWidth):
@@ -266,7 +270,7 @@ def pow_image_grayscale(image1, p=1):
     fmin = 256
     fmaximage = 0
 
-    if not (0.0 < p):
+    if not (0 < p):
         raise Exception("program poteguje obraz SZARY z zadana potega z zakresu p > 0, a podana liczba "
                         "to %d." % p)
 
@@ -418,9 +422,9 @@ def root_image_grayscale(image1, p=0.5):
     fmin = 256
     fmaximage = 0
 
-    if not (0 < p):
-        raise Exception("program pierwiastkuje obraz SZARY z zadanym parametrem z zakresu p > 0.0, a podana liczba "
-                        "to %f." % p)
+    if not (0.0 < p < 1.0):
+        raise Exception("program pierwiastkuje obraz SZARY z zadanym parametrem z zakresu 0.0 < p < 1.0, a podana liczba"
+                        " to %f." % p)
 
     if image1.imageBitsColor[0] == 4:
         maxBitsColor = 15
