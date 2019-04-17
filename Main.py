@@ -4,34 +4,81 @@ from ReadTiff import ReadTiff
 from WriteTiff import writeTiff
 from arithmetic_gray import sum_const_grayscale, sum_two_images_grayscale, multiplication_const_grayscale, \
     multiplication_two_images_grayscale, mixing_images_grayscale, pow_image_grayscale, log_image_grayscale,\
-    root_image_grayscale, division_two_iamges_grayscale, division_const_grayscale
+    sqrt_image_grayscale, division_two_iamges_grayscale, division_const_grayscale
 from arithmetic_color import sum_const_RGB, sum_two_images_RGB, multiplication_const_RGB, \
     multiplication_two_images_RGB, mixing_images_RGB, pow_image_RGB, division_const_RGB, \
-    division_two_iamges_RGB, root_image_RGB, log_image_RGB
+    division_two_iamges_RGB, sqrt_image_RGB, log_image_RGB
 
 if __name__ == "__main__":
 
     try:
-        nameFIleONE = 'img/RGBLaLiga.tif'
-        nameFileTWO = 'img/RGBMessi.tif'
 
-        readFileOne = ReadTiff(nameFIleONE)
-        imageOne = Image(readFileOne)
+        # -------SZARY-------
 
-        readFileTwo = ReadTiff(nameFileTWO)
-        imageTwo = Image(readFileTwo)
+        nameFIleONE = 'img/gMessi.tif'
+        nameFileTWO = 'img/gLaLiga.tif'
 
-        unification_RGB_Geometric(imageOne, imageTwo)
+        #readFileOne = ReadTiff(nameFIleONE)
+        #imageOne = Image(readFileOne)
 
-        unification_RGB_Resolution(imageOne, imageTwo)
+        #readFileTwo = ReadTiff(nameFileTWO)
+        #imageTwo = Image(readFileTwo)
 
-        #writeTiff("2", imageTwo)
-        #sum_const_RGB(imageOne, 254)
+        #unification_Grayscale_Geometric(imageOne, imageTwo)
+        #writeTiff("Geometric_GRAY_1", imageOne)
+        #writeTiff("Geometric_GRAY_2", imageTwo)
+
+        #unification_Grayscale_Resolution(imageOne, imageTwo)
+        #writeTiff("Resolution_GRAY_1", imageOne)
+        #writeTiff("Resolution_GRAY_2", imageTwo)
+
+        #sum_const_grayscale(imageTwo, 50)
+        #sum_two_images_grayscale(imageOne, imageTwo)
+
+        #multiplication_const_grayscale(imageTwo, 50)
+        #multiplication_two_images_grayscale(imageOne, imageTwo)
+
+        #mixing_images_grayscale(imageOne, imageTwo, 0.5)
+        #pow_image_grayscale(imageTwo, 2)
+        #log_image_grayscale(imageTwo)
+        #sqrt_image_grayscale(imageTwo, 2)
+
+        #division_const_grayscale(imageTwo, 15)
+        #division_two_iamges_grayscale(imageOne, imageTwo)
+
+
+        # --------RGB--------
+
+        #nameFIleONE = 'img/RGBMessi.tif'
+        #nameFileTWO = 'img/RGBimage.tif'
+
+        #readFileOne = ReadTiff(nameFIleONE)
+        #imageOne = Image(readFileOne)
+
+        #readFileTwo = ReadTiff(nameFileTWO)
+        #imageTwo = Image(readFileTwo)
+
+        #unification_RGB_Geometric(imageOne, imageTwo)
+        #writeTiff("Geometric_RGB_1", imageOne)
+        #writeTiff("Geometric_RGB_2", imageTwo)
+
+        #unification_RGB_Resolution(imageOne, imageTwo)
+        #writeTiff("Resolution_RGB_1", imageOne)
+        #writeTiff("Resolution_RGB_2", imageTwo)
+
+        #sum_const_RGB(imageTwo, 100)
         #sum_two_images_RGB(imageOne, imageTwo)
 
-        #multiplication_const_RGB(imageOne, 55)
+        #multiplication_const_RGB(imageTwo, 100)
         #multiplication_two_images_RGB(imageOne, imageTwo)
-        mixing_images_RGB(imageOne,imageTwo,0.3)
+
+        #mixing_images_RGB(imageOne, imageTwo, 0.8)
+        #pow_image_RGB(imageTwo, 3)
+        #log_image_RGB(imageOne)
+        #sqrt_image_RGB(imageTwo, 3)
+
+        #division_const_RGB(imageTwo, 30)
+        #division_two_iamges_RGB(imageOne, imageTwo)
 
     except Exception as e:
         print("BLAD %s" %e)
