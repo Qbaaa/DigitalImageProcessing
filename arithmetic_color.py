@@ -269,7 +269,7 @@ def multiplication_two_images_RGB(image1, image2):
             if min([tempMultR, tempMultG, tempMultB]) < fmin:
                 fmin = min([tempMultR, tempMultG, tempMultB])
 
-    writeTiff('multi_const_RGB', image1)
+    writeTiff('multi_two_images_RGB', image1)
 
     # normalizacja
     for i in range(image1.imageLength):
@@ -278,7 +278,7 @@ def multiplication_two_images_RGB(image1, image2):
             image1.imageData[i][j][1] = round(maxBitsColor * ((image1.imageData[i][j][1] - fmin) / (fmax - fmin)))
             image1.imageData[i][j][2] = round(maxBitsColor * ((image1.imageData[i][j][2] - fmin) / (fmax - fmin)))
 
-    writeTiff('normalization_multi_const_RGB', image1)
+    writeTiff('normalization_multi_two_images_RGB', image1)
 
 
 # mieszanie obrazow z okreslonym wspolczynnikiem
@@ -525,16 +525,14 @@ def division_two_iamges_RGB(image1, image2):
 
 
 # pierwiastkowanie obrazu
-def root_image_RGB(image1, p=0.5):
+def sqrt_image_RGB(image1, deg=1):
 
     global maxBitsColor
     fmax = 0
     fmin = 256
     fmaximage = 0
 
-    if not (0.0 < p < 1.0):
-        raise Exception("program pierwiastkuje obraz RGB z zadanym parametrem z zakresu 0.0 < p < 1.0, a podana liczba"
-                        " to %f." % p)
+    p = 1/deg
 
     if image1.imageBitsColor[0] == 4:
         maxBitsColor = 15
