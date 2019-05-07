@@ -474,3 +474,144 @@ def unification_Grayscale_Resolution(image1, image2):
 
     else:
         raise Exception("Ta funkcja służy do ujednolicenia rozdzielczosciowo obrazów SZARYCH, a ktorys obraz jest RGB.")
+
+
+def unification_Grayscale_one_image(image1, length2, width2):
+
+    width1 = image1.imageWidth
+    length1 = image1.imageLength
+
+    if length1 < length2 or width1 < width2:
+
+        if length1 < length2:
+            scaleLenght1 = length1/length2
+        else:
+            scaleLenght1 = 1
+
+        if width1 < width2:
+            scaleWidth1 = width1 / width2
+        else:
+            scaleWidth1 = 1
+
+        if image1.imageLength < length2:
+            print("Dlugosc obrazu 1 jest zwiekszana.")
+
+            for i in range(image1.imageLength, length2):
+                image1.imageData.append([[1]])
+                for j in range(image1.imageWidth-1):
+                    image1.imageData[i].append([1])
+
+            image1.imageLength = length2
+
+        if image1.imageWidth < width2:
+            print("Szerokosc obrazu 1 jest zwiekszana.")
+
+            for i in range(image1.imageLength):
+               for j in range(image1.imageWidth, width2):
+                    image1.imageData[i].append([1])
+
+            image1.imageWidth = width2
+
+        for j in range(image1.imageLength):
+            for i in range(image1.imageWidth):
+                x = i * scaleWidth1
+                y = j * scaleLenght1
+
+                b = x - int(x)
+                a = y - int(y)
+
+                if int(y) + 1 >= image1.oldImageLength:
+                    tempy = image1.oldImageLength - 1
+                else:
+                    tempy = int(y) + 1
+
+                if int(x) + 1 >= image1.oldImageWidth:
+                    tempx = image1.oldImageWidth - 1
+                else:
+                    tempx = int(x) + 1
+
+                Fa0 = (1 - a) * image1.oldImageData[int(y)][int(x)][0] + a * image1.oldImageData[tempy][int(x)][0]
+                Fa1 = (1 - a) * image1.oldImageData[int(y)][tempx][0] + a * image1.oldImageData[tempy][tempx][0]
+                Fab = (1 - b) * Fa0 + b * Fa1
+
+                image1.imageData[j][i][0] = int(round(Fab))
+
+    else:
+        raise Exception("Ta funkcja służy do ujednolicenia obrazu SZAREGO, nie mozna zmniejszyc obrazu, poniewaz"
+                        " prowadzi do utraty danych z obrazu.")
+
+
+def unification_RGB_one_image(image1, length2, width2):
+
+    width1 = image1.imageWidth
+    length1 = image1.imageLength
+
+    if length1 < length2 or width1 < width2:
+
+        if length1 < length2:
+            scaleLenght1 = length1/length2
+        else:
+            scaleLenght1 = 1
+
+        if width1 < width2:
+            scaleWidth1 = width1 / width2
+        else:
+            scaleWidth1 = 1
+
+        if image1.imageLength < length2:
+            print("Dlugosc obrazu 1 jest zwiekszana.")
+
+            for i in range(image1.imageLength, length2):
+                image1.imageData.append([[1, 1, 1]])
+                for j in range(image1.imageWidth-1):
+                    image1.imageData[i].append([1, 1, 1])
+
+            image1.imageLength = length2
+
+        if image1.imageWidth < width2:
+            print("Szerokosc obrazu 1 jest zwiekszana.")
+
+            for i in range(image1.imageLength):
+                for j in range(image1.imageWidth, width2):
+                    image1.imageData[i].append([1, 1, 1])
+
+            image1.imageWidth = width2
+
+        for j in range(image1.imageLength):
+            for i in range(image1.imageWidth):
+                x = i * scaleWidth1
+                y = j * scaleLenght1
+
+                b = x - int(x)
+                a = y - int(y)
+
+                if int(y) + 1 >= image1.oldImageLength:
+                    tempy = image1.oldImageLength - 1
+                else:
+                    tempy = int(y) + 1
+
+                if int(x) + 1 >= image1.oldImageWidth:
+                    tempx = image1.oldImageWidth - 1
+                else:
+                    tempx = int(x) + 1
+
+                Fa0 = (1 - a) * image1.oldImageData[int(y)][int(x)][0] + a * image1.oldImageData[tempy][int(x)][0]
+                Fa1 = (1 - a) * image1.oldImageData[int(y)][tempx][0] + a * image1.oldImageData[tempy][tempx][0]
+                Fab = (1 - b) * Fa0 + b * Fa1
+
+                image1.imageData[j][i][0] = int(round(Fab))
+
+                Fa0 = (1 - a) * image1.oldImageData[int(y)][int(x)][1] + a * image1.oldImageData[tempy][int(x)][1]
+                Fa1 = (1 - a) * image1.oldImageData[int(y)][tempx][1] + a * image1.oldImageData[tempy][tempx][1]
+                Fab = (1 - b) * Fa0 + b * Fa1
+
+                image1.imageData[j][i][1] = int(round(Fab))
+
+                Fa0 = (1 - a) * image1.oldImageData[int(y)][int(x)][2] + a * image1.oldImageData[tempy][int(x)][2]
+                Fa1 = (1 - a) * image1.oldImageData[int(y)][tempx][2] + a * image1.oldImageData[tempy][tempx][2]
+                Fab = (1 - b) * Fa0 + b * Fa1
+
+                image1.imageData[j][i][2] = int(round(Fab))
+
+    else:
+        raise Exception("Ta funkcja służy do ujednolicenia obrazu SZAREGO, nie mozna zmniejszyc obrazu, poniewaz prowadzi do utraty danych z obrazu.")
