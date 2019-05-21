@@ -1,5 +1,8 @@
 # ZADANIE 2
 from math import ceil, log
+
+import numpy as np
+
 from WriteTiff import writeTiff
 
 
@@ -29,11 +32,15 @@ def sum_const_grayscale(image1, const=0):
 
     for i in range(image1.imageLength):
         for j in range(image1.imageWidth):
-            temp = image1.imageData[i][j][0] + const
 
-            if temp > Qmax:
-                Qmax = temp
+             # obliczanie sumy obrazu z stala
+             temp = image1.imageData[i][j][0] + const
 
+             # poszukiwanie maksimum w obrazie
+             if temp > Qmax:
+                 Qmax = temp
+
+    # sprawdzenie, czy maksimum obrazu przekracza zakres
     if Qmax > maxBitsColor:
         Dmax = Qmax - maxBitsColor
         X = round(Dmax/maxBitsColor, 2)
@@ -41,17 +48,20 @@ def sum_const_grayscale(image1, const=0):
     if X == 1.0:
         X = 0.99
 
-    # dodawanie
+    # dodawanie obrazu ze stala z uzwglenieniem zakresu
     for i in range(image1.imageLength):
         for j in range(image1.imageWidth):
             tempSum = ceil((image1.imageData[i][j][0] - (image1.imageData[i][j][0] * X)) + (const - (const * X)))
-            image1.imageData[i][j][0] = tempSum
 
+            # poszukiwanie maksimum
             if tempSum > fmax:
                 fmax = tempSum
 
+            # poszukiwanie minimum
             if tempSum < fmin:
                 fmin = tempSum
+
+            image1.imageData[i][j][0] = tempSum
 
     writeTiff('add_const', image1)
 
@@ -60,7 +70,6 @@ def sum_const_grayscale(image1, const=0):
         for j in range(image1.imageWidth):
             image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
     writeTiff('normalization_add_const', image1)
-
 
 # sumowanie dwoch obrazow
 def sum_two_images_grayscale(image1, image2):
@@ -84,13 +93,16 @@ def sum_two_images_grayscale(image1, image2):
     fmax = 0
     fmin = 256
 
+    # obliczanie sumy dwoch obrazow
     for i in range(image1.imageLength):
         for j in range(image1.imageWidth):
             temp = image1.imageData[i][j][0] + image2.imageData[i][j][0]
 
+            # poszukiwanie maksimum w sumie obrazow
             if temp > Qmax:
                 Qmax = temp
 
+    # sprawdzenie, czy maksimum sumowanego obrazu przekracza zakres
     if Qmax > maxBitsColor:
         Dmax = Qmax - maxBitsColor
         X = round(Dmax/maxBitsColor, 2)
@@ -98,18 +110,23 @@ def sum_two_images_grayscale(image1, image2):
     if X == 1.0:
         X = 0.99
 
+    # dodawanie dwóch obrazu  z uzwglenieniem zakresu
     for i in range(image1.imageLength):
         for j in range(image1.imageWidth):
             tempSum = round((image1.imageData[i][j][0] - (image1.imageData[i][j][0] * X)) + (image2.imageData[i][j][0] - (image2.imageData[i][j][0] * X)))
             image1.imageData[i][j][0] = tempSum
 
+            # poszukiwanie maksimum
             if tempSum > fmax:
                 fmax = tempSum
 
+            # poszukiwanie minimum
             if tempSum < fmin:
                 fmin = tempSum
 
     writeTiff('add_two_image', image1)
+
+    # normalizacja wynikowego obrazu
     for i in range(image1.imageLength):
         for j in range(image1.imageWidth):
             image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
@@ -254,12 +271,13 @@ def mixing_images_grayscale(image1, image2, scales=0.0):
                 fmin = tempMix
 
     writeTiff('mix_two_image', image1)
-    # normalizacja
-    for i in range(image1.imageLength):
-        for j in range(image1.imageWidth):
-            image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
 
-    writeTiff('normalization_mix_two_image', image1)
+    # normalizacja
+    # for i in range(image1.imageLength):
+    #     for j in range(image1.imageWidth):
+    #         image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
+    #
+    # writeTiff('normalization_mix_two_image', image1)
 
 
 # potegowanie obrazu (z zadana potega)

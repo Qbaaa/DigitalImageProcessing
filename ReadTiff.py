@@ -1,5 +1,5 @@
 from math import floor
-
+import numpy as np
 
 class ReadTiff:
 
@@ -221,6 +221,21 @@ class ReadTiff:
 
                 if self.compression == 1:
                     self.noCompression(plik)
+
+                if self.color == 2:
+                    self.originalImageData = np.ones((self.imageLength, self.imageWidth, 3), dtype=np.uint8)
+
+                    for i in range(self.imageLength):
+                        for j in range(self.imageWidth):
+                            for k in range(3):
+                                self.originalImageData[i, j, k] = self.imageData[i][j][k]
+
+                else:
+                    self.originalImageData = np.ones((self.imageLength, self.imageWidth, 1), dtype=np.uint8)
+
+                    for i in range(self.imageLength):
+                        for j in range(self.imageWidth):
+                            self.originalImageData[i, j] = self.imageData[i][j]
 
             plik.close()
 

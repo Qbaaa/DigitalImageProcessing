@@ -321,13 +321,13 @@ def mixing_images_RGB(image1, image2, scales=0.0):
 
     writeTiff('mix_two_image_RGB', image1)
     # normalizacja
-    for i in range(image1.imageLength):
-        for j in range(image1.imageWidth):
-            image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
-            image1.imageData[i][j][1] = round(maxBitsColor * ((image1.imageData[i][j][1] - fmin) / (fmax - fmin)))
-            image1.imageData[i][j][2] = round(maxBitsColor * ((image1.imageData[i][j][2] - fmin) / (fmax - fmin)))
-
-    writeTiff('normalization_mix_two_image_RGB', image1)
+    # for i in range(image1.imageLength):
+    #     for j in range(image1.imageWidth):
+    #         image1.imageData[i][j][0] = round(maxBitsColor * ((image1.imageData[i][j][0] - fmin) / (fmax - fmin)))
+    #         image1.imageData[i][j][1] = round(maxBitsColor * ((image1.imageData[i][j][1] - fmin) / (fmax - fmin)))
+    #         image1.imageData[i][j][2] = round(maxBitsColor * ((image1.imageData[i][j][2] - fmin) / (fmax - fmin)))
+    #
+    # writeTiff('normalization_mix_two_image_RGB', image1)
 
 
 # potegowanie obrazu (z zadana potega)
@@ -566,14 +566,14 @@ def sqrt_image_RGB(image1, deg=1):
             elif tempPowG == 0:
                 tempPowG = 0
             else:
-                tempPowG = ceil(pow(image1.imageData[i][j][0] / fmaximage, p) * maxBitsColor)
+                tempPowG = ceil(pow(image1.imageData[i][j][1] / fmaximage, p) * maxBitsColor)
 
             if tempPowB == maxBitsColor:
                 tempPowB = maxBitsColor
             elif tempPowB == 0:
                 tempPowB = 0
             else:
-                tempPowB = ceil(pow(image1.imageData[i][j][0] / fmaximage, p) * maxBitsColor)
+                tempPowB = ceil(pow(image1.imageData[i][j][2] / fmaximage, p) * maxBitsColor)
 
             image1.imageData[i][j][0] = tempPowR
             image1.imageData[i][j][1] = tempPowG
